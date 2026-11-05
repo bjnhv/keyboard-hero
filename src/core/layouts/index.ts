@@ -111,3 +111,4 @@ export function getFingerColorTheme(finger: FingerType): {
       };
   }
 }
+

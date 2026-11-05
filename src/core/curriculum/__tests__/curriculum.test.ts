@@ -119,3 +119,4 @@ describe('Adaptive Lesson Generator', () => {
     expect(wordsWithFocusKey.length).toBeGreaterThanOrEqual(10);
   });
 });
+

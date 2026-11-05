@@ -61,11 +61,11 @@ export function calculateSessionMetrics(
   existingHistory: WpmHistoryPoint[] = []
 ): TypingSessionMetrics {
   const totalKeystrokes = keystrokes.length;
-  if (totalKeystrokes === 0) {
+  if (totalKeystrokes === 0 || durationMs <= 0) {
     return createInitialMetrics();
   }
 
-  const durationMinutes = Math.max(0, durationMs) / 60000;
+  const durationMinutes = durationMs / 60000;
 
   let correctCount = 0;
   let errorCount = 0;
@@ -153,3 +153,4 @@ export function calculateSessionMetrics(
     keyMetrics,
   };
 }
+

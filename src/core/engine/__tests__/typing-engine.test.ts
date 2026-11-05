@@ -159,3 +159,4 @@ describe('Metrics Calculations', () => {
     expect(metrics.cpm).toBe(10);
   });
 });
+

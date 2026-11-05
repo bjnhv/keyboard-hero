@@ -80,3 +80,4 @@ export const QWERTY_LAYOUT: KeyboardLayout = {
     ],
   ],
 };
+

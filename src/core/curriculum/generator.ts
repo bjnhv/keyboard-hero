@@ -115,3 +115,4 @@ function generatePatternWord(activeKeys: string[], focusKey?: string): string {
 
   return chars.join('');
 }
+

@@ -257,12 +257,7 @@ export class TypingEngine {
    */
   public getElapsedTimeMs(currentTimestamp?: number): number {
     if (!this.startTime) return 0;
-    const end =
-      this.endTime ??
-      currentTimestamp ??
-      (this.lastKeystrokeTimestamp
-        ? Math.max(performance.now(), this.lastKeystrokeTimestamp)
-        : performance.now());
+    const end = this.endTime ?? currentTimestamp ?? performance.now();
     const pauseDiff =
       this.status === 'paused' && this.lastPauseTimestamp
         ? end - this.lastPauseTimestamp
@@ -388,3 +383,4 @@ export class TypingEngine {
     ].includes(key);
   }
 }
+

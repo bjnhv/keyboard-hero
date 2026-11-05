@@ -71,3 +71,4 @@ export function getUnlockedKeysUpToStage(stageId: number): string[] {
   }
   return keys;
 }
+

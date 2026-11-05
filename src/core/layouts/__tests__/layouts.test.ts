@@ -34,3 +34,4 @@ describe('Keyboard Layouts & Finger Mappings', () => {
     expect(indexTheme.text).toBe('text-emerald-400');
   });
 });
+
