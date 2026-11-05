@@ -31,41 +31,41 @@ graph TD
 ## Step-by-Step Implementation Roadmap
 
 ### Phase 1: Foundation & Project Scaffolding
-- [ ] Initialize Next.js 15 project with TypeScript, Tailwind CSS, and `src/` directory layout.
+- [x] Initialize Next.js 15 project with TypeScript, Tailwind CSS, and `src/` directory layout.
 - [ ] Configure `@serwist/next` (PWA) and Service Worker for full offline capabilities.
-- [ ] Install and configure core packages:
+- [x] Install and configure core packages:
   - `zustand` (performance-focused state management).
   - `dexie` & `dexie-react-hooks` (local client database).
   - `drizzle-orm`, `drizzle-kit`, and `pg` (PostgreSQL ORM).
   - `lucide-react`, `clsx`, `tailwind-merge` (UI essentials).
-- [ ] Set up Vitest / testing harness for pure TypeScript logic testing.
+- [x] Set up Vitest / testing harness for pure TypeScript logic testing.
 
 ### Phase 2: Core Typing Engine (Zero-DOM, Pure TypeScript)
-- [ ] **State Machine**: Implement typing engine lifecycle (`idle` -> `running` -> `paused` -> `completed`).
-- [ ] **Realtime Metrics**:
+- [x] **State Machine**: Implement typing engine lifecycle (`idle` -> `running` -> `paused` -> `completed`).
+- [x] **Realtime Metrics**:
   - High-precision timestamping using `performance.now()`.
   - Gross WPM, Net WPM, Accuracy (%), raw CPM, and consistency calculations.
   - Per-character dwell time (latency between consecutive keys).
-- [ ] **Input Diffing & Cursor Management**:
+- [x] **Input Diffing & Cursor Management**:
   - Exact match vs. typo character diffing.
   - Backspace behavior (allow backspacing mistake words or forward lock).
-- [ ] **Unit Tests**: Full test suite covering edge cases (fast typing, multiple backspaces, paste prevention).
+- [x] **Unit Tests**: Full test suite covering edge cases (fast typing, multiple backspaces, paste prevention).
 
 ### Phase 3: Adaptive Learning Algorithm (Keybr-style)
-- [ ] **Key Progression Ladder**:
+- [x] **Key Progression Ladder**:
   - Stage 1: Home row anchors (`f`, `j`, `d`, `k`, `s`, `l`, `a`, `;`).
   - Stage 2: Center/Reach keys (`g`, `h`, `r`, `u`, `e`, `i`, `t`, `y`).
   - Stage 3: Top row & Bottom row keys (`q`, `w`, `o`, `p`, `z`, `x`, `c`, `v`, `b`, `n`, `m`).
   - Stage 4: Capitals & Punctuation (`Shift`, commas, periods, quotes).
-- [ ] **Confidence Score Engine**:
+- [x] **Confidence Score Engine**:
   - Calculate per-key score: $Confidence = f(\text{Accuracy}, \text{Speed}, \text{Error Frequency})$.
   - Track individual key dwell times and error rates.
-- [ ] **Pseudo-Word / Exercise Generator**:
+- [x] **Pseudo-Word / Exercise Generator**:
   - Markov chain / N-gram frequency model that builds pronounceable words using *only* unlocked letters.
   - Bias word generation heavily toward the user's lowest-confidence keys until target confidence (e.g. 95% accuracy @ 35+ WPM) is achieved.
 
 ### Phase 4: Virtual Keyboard & Visual Guidance
-- [ ] **Layout System**:
+- [x] **Layout System**:
   - Multi-layout support (QWERTY, Colemak, Dvorak).
   - Define keyboard matrix with key dimensions and finger assignments.
 - [ ] **Interactive Visual Keyboard Component**:
