@@ -17,6 +17,7 @@ export function getDbPool(): Pool | null {
       connectionString,
       max: 10,
       idleTimeoutMillis: 30000,
+      ssl: connectionString.includes('localhost') ? false : { rejectUnauthorized: false },
     });
   }
 

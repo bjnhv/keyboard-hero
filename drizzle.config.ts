@@ -1,10 +1,17 @@
 import { defineConfig } from 'drizzle-kit';
 
+try {
+  process.loadEnvFile('.env.local');
+} catch {}
+
 export default defineConfig({
   schema: './src/db/schema/index.ts',
   out: './src/db/migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5432/keyboard_hero',
+    url:
+      process.env.DATABASE_URL_UNPOOLED ??
+      process.env.DATABASE_URL ??
+      'postgresql://postgres:postgres@localhost:5432/keyboard_hero',
   },
 });
