@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { ArrowLeft, Keyboard, Sparkles, Gamepad2, LucideIcon } from 'lucide-react';
 
 export interface AppBarProps {
@@ -32,6 +32,27 @@ export const AppBar: React.FC<AppBarProps> = ({
   className = '',
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleBack = () => {
+    if (typeof window !== 'undefined') {
+      // Check if there is internal session history to step back into
+      const hasHistory =
+        (window.history.state &&
+          typeof window.history.state.idx === 'number' &&
+          window.history.state.idx > 0) ||
+        (window.history.length > 1 &&
+          Boolean(document.referrer) &&
+          document.referrer.startsWith(window.location.origin));
+
+      if (hasHistory) {
+        router.back();
+        return;
+      }
+    }
+    // Fall back to Home if directly opened or no history
+    router.push('/');
+  };
 
   return (
     <header
@@ -39,14 +60,16 @@ export const AppBar: React.FC<AppBarProps> = ({
     >
       {/* Left Navigation Bar */}
       <div className="flex items-center gap-2 sm:gap-2.5">
-        {/* Back to Home Link */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition font-medium"
+        {/* Back Button with Fallback to Home */}
+        <button
+          type="button"
+          onClick={handleBack}
+          title="Back"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition font-medium cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="hidden xs:inline">Home</span>
-        </Link>
+          <span className="hidden xs:inline">Back</span>
+        </button>
 
         <span className="text-border">/</span>
 
