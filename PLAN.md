@@ -123,6 +123,12 @@ graph TD
   - [x] Interactive per-key inspection drawer with lifetime hits, errors, rolling WPM, and dwell time.
   - [x] Lifetime practice metrics (Peak WPM, Average WPM, Average Accuracy, Total Keystrokes).
   - [x] Offline practice history table loaded directly from Dexie.js (`db.sessions`).
+- [x] **High-Resolution (2K / QHD) Responsive Design & Theme Tokens**:
+  - [x] High-DPI root font-size scaling (`17.5px` on $\ge 1920\text{px}$, `19.5px` on $\ge 2400\text{px}$, `22px` on $\ge 3200\text{px}$).
+  - [x] Fluid typing text sizes (`text-3xl` to `text-8xl` on 2K displays).
+  - [x] Enlarged keycaps, hand silhouettes, and expanded layout containers (`max-w-[1700px]`).
+  - [x] Dedicated UI Text Size toggle button (`1x` standard, `1.25x` large, `1.5x` huge) persisted in IndexedDB.
+  - [x] Centralized design tokens in `src/styles/theme.ts`.
 - [ ] **Mobile Responsiveness & PWA**:
   - [ ] Responsive scaling for tablet/mobile screens.
   - [ ] Detection for external physical/Bluetooth keyboard on mobile with fallback theory/review screen.
