@@ -108,13 +108,13 @@ graph TD
   - Reset progress cleanly wipes local database tables.
 
 ### Phase 7: Backend Synchronization & PostgreSQL (Drizzle ORM)
-- [ ] **Drizzle Schema Definition**:
-  - Tables: `users`, `sessions`, `key_statistics`, `stage_progress`.
-- [ ] **Sync Protocol**:
-  - Implement `/api/sync/sessions` batch endpoint with idempotent upserts (`sessionId` UUID).
-  - Client-side `SyncManager` with `navigator.onLine` auto-reconnect and periodic sync.
-- [ ] **Analytics API**:
-  - Endpoints for global and personal progress trends, speed evolution, and heatmaps.
+- [x] **Drizzle Schema Definition**:
+  - Tables: `users`, `typing_sessions`, `user_key_stats`.
+  - Configured `drizzle.config.ts` for database migrations and Drizzle Studio.
+- [x] **Sync Protocol**:
+  - Implemented `/api/sync/sessions` batch endpoint with Zod validation.
+  - Idempotent upserts (`ON CONFLICT (id) DO NOTHING`) preventing duplicate runs.
+  - Client-side `ClientSyncManager` with `navigator.onLine` auto-reconnect and periodic sync flushes.
 
 ### Phase 8: UI Dashboard, Analytics & Responsive Polish
 - [ ] **Typing Canvas UI**: Smooth caret animation, active line rendering, mistake coloration.

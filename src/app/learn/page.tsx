@@ -9,6 +9,7 @@ import { HandsGuide } from '@/components/keyboard/hands-guide';
 import { SessionSummaryModal } from '@/components/typing/session-summary-modal';
 import { useTypingStore } from '@/stores/use-typing-store';
 import { CURRICULUM_STAGES } from '@/core/curriculum';
+import { syncManager } from '@/local-db';
 
 export default function LearnPage() {
   const [isMounted, setIsMounted] = React.useState(false);
@@ -26,6 +27,8 @@ export default function LearnPage() {
   useEffect(() => {
     setIsMounted(true);
     loadFromLocalDb();
+    syncManager.startPeriodicSync();
+    return () => syncManager.stopPeriodicSync();
   }, [loadFromLocalDb]);
 
   // Handle global shortcuts on modal (Enter -> next lesson, Tab+Enter -> retry)
