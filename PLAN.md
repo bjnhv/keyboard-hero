@@ -133,6 +133,29 @@ graph TD
   - [ ] Responsive scaling for tablet/mobile screens.
   - [ ] Detection for external physical/Bluetooth keyboard on mobile with fallback theory/review screen.
 
+### Phase 9: Arcade Mode & Mini-Games Hub (`/arcade`)
+*Full game design document available in [`ARCADE.md`](./ARCADE.md).*
+- [ ] **Arcade Hub Navigation & Route (`/arcade`)**:
+  - Retro neon arcade hub with game selector cards, difficulty toggles, and high-score badges.
+- [ ] **Mini-Game 1: "Redline RPM" (Speedometer Sustain Challenge)**:
+  - Analog & digital SVG speedometer dial responding in real time to rolling WPM.
+  - Redline threshold marker: player must keep speed in the red zone for $X$ consecutive seconds.
+  - Turbo boost particles, engine downshift audio cues, and decay penalties if dropping below the line.
+  - Tiers: Amateur (35 WPM / 10s), Sport (50 WPM / 15s), Supercar (75 WPM / 20s), Hypercar (100+ WPM / 25s).
+- [ ] **Mini-Game 2: "Bomb Defusal Protocol" (Crisis Countdown)**:
+  - Ticking briefcase bomb prop with dynamic digital LED countdown clock.
+  - Severe mistake penalty: every typo deducts $-2.0\text{s}$ to $-5.0\text{s}$ from remaining time with alarm siren and screen shake.
+  - Multi-phase defusal sequences (passphrases, wire cutting, cryptographic hashes).
+  - Tiers: Recruit (45s, $-1.5\text{s}$), Agent (30s, $-3.0\text{s}$), Special Forces (22s, $-4.0\text{s}$), Impossible (15s, $-5.0\text{s}$).
+- [ ] **Brainstormed Future Mini-Games**:
+  - [ ] *Word Invaders*: Retro space defense destroying falling alien ships with typed words.
+  - [ ] *Rhythm DJ / Beat Match*: Guitar Hero style vertical note highway training cadence and dwell consistency.
+  - [ ] *Terminal Hacker*: Cyber infiltration code-runner keeping security trace route below 100%.
+  - [ ] *Ghost Drag Race*: 1/4-mile drag duel against your personal best ghost car.
+- [ ] **Arcade Storage & Audio**:
+  - Dexie table `arcadeScores` tracking personal bests, stars, and medals per difficulty tier.
+  - Web Audio procedural SFX (engine revs, countdown beeps, defusal zaps, detonation).
+
 ---
 
 ## Verification & Quality Gates
