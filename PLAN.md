@@ -161,6 +161,56 @@ graph TD
   - Dexie table `arcadeScores` tracking personal bests, stars, and medals per difficulty tier.
   - Web Audio procedural SFX (engine revs, countdown beeps, defusal zaps, detonation).
 
+### Phase 10 (Optional): Cloud Authentication (Google OAuth) & Cross-Device Sync
+*Goal: Allow users to sign in with their Google account so curriculum progression, key confidence, settings, and arcade high scores sync seamlessly across devices (desktop, laptop, tablet).*
+- [ ] **Google OAuth Authentication (Auth.js / NextAuth v5)**:
+  - Configure Google OAuth Provider (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`).
+  - Integrate Auth.js Drizzle Adapter (`@auth/drizzle-adapter`) with existing PostgreSQL database (`src/db/schema.ts`).
+  - Store user identity (`id`, `name`, `email`, `image`) and manage secure HTTP-only session cookies.
+  - Header profile badge: Display avatar, user display name, sign-in button, and sign-out dropdown.
+- [ ] **Anonymous / Guest to Authenticated Account Linking**:
+  - Maintain 100% offline-first capability for guest users (no login required to practice).
+  - When a guest user logs in with Google for the first time, prompt: *"Merge your local practice history and progress into this Google account?"*.
+  - Seamlessly migrate Dexie.js local sessions and key progress to the authenticated PostgreSQL user profile.
+- [ ] **Bidirectional Cross-Device Synchronization Engine**:
+  - **New Device Hydration (Cloud -> Local)**:
+    - Upon signing in on a new computer or device, automatically pull lifetime statistics, key progress heatmap data, and unlocked curriculum stages from PostgreSQL down to Dexie IndexedDB.
+  - **Auto-Sync on Session Completion (Local -> Cloud)**:
+    - Push completed typing sessions, rolling key confidence, and arcade scores to `/api/sync/sessions` tagged with authenticated `userId`.
+  - **Conflict Resolution (Last-Write-Wins & Highest Stat Merge)**:
+    - If practice occurred on multiple offline devices, resolve conflicts by merging max key attempts, highest confidence scores, and preserving all unique session timestamps.
+
+---
+
+## Online Deployment & Serving Strategy (Discussion)
+
+To serve Keyboard Hero publicly on the web while preserving sub-millisecond typing responsiveness and offline resilience, the following production architectures are evaluated:
+
+### 1. Recommended Production Architecture (Vercel + Neon Postgres)
+- **Frontend & API Routes**: **Vercel**
+  - **Why**: Native Next.js 15 App Router support, automatic worldwide Edge CDN asset caching, instant SSL, zero cold-start edge delivery, and automatic preview deployments on GitHub pull requests.
+  - **Cost**: Free tier covers hobby and portfolio workloads comfortably.
+- **Managed Database**: **Neon Serverless PostgreSQL** (or **Supabase Postgres**)
+  - **Why**: Serverless connection pooling (ideal for serverless Next.js API routes), automatic scale-to-zero, point-in-time recovery, and 100% compatibility with Drizzle ORM.
+  - **Connection**: Integrated via `DATABASE_URL` with connection pooling (`pg` or `@neondatabase/serverless`).
+
+### 2. Alternative Architecture A: Single-Host Platform (Railway / Render)
+- **Deployment**: Single Railway project housing both the Next.js container and a co-located PostgreSQL instance.
+- **Pros**: Zero networking latency between Next.js server and database; simplified one-dashboard management.
+- **Cons**: Paid usage model after starter credits; single-region hosting unless multi-region CDN is placed in front (e.g., Cloudflare).
+
+### 3. Alternative Architecture B: Self-Hosted Docker Container (VPS / Fly.io / Coolify)
+- **Deployment**: Build production Docker image using Next.js `output: 'standalone'` mode.
+- **Hosting**: Hetzner Cloud / DigitalOcean droplet ($4–$6/month) or Fly.io managed containers.
+- **Pros**: Total infrastructure sovereignty, no vendor lock-in, fixed predictable hosting cost.
+- **Cons**: Requires manual SSL provisioning, backup automation, and server maintenance.
+
+### 4. Edge Asset Caching & Offline PWA Serving
+- **Edge CDN (Cloudflare or Vercel Edge)**:
+  - Static bundles (`_next/static/*`), audio synthesis assets, and sound buffers cached at 300+ edge locations worldwide for $<20\text{ms}$ initial page loads.
+- **Service Worker / PWA**:
+  - Cache core application shell so the app can be installed as a desktop/mobile PWA and boot instantly with zero internet connectivity.
+
 ---
 
 ## Verification & Quality Gates
