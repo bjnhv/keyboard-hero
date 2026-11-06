@@ -7,6 +7,7 @@ import {
   calculateKeyConfidence,
   updateUserKeyProgress,
   getWeakestKey,
+  MIN_ATTEMPTS_FOR_CONFIDENCE,
 } from '../confidence';
 import { generateAdaptiveLesson } from '../generator';
 
@@ -29,7 +30,7 @@ describe('Curriculum Stages', () => {
 
 describe('Confidence & Weak Key Calculation', () => {
   it('penalizes low sample size', () => {
-    const confidence = calculateKeyConfidence(100, 200, 3);
+    const confidence = calculateKeyConfidence(100, 200, Math.max(1, MIN_ATTEMPTS_FOR_CONFIDENCE - 1));
     expect(confidence).toBeLessThanOrEqual(0.2);
   });
 

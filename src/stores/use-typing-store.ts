@@ -22,6 +22,21 @@ import {
   clearLocalProgress,
 } from '@/local-db';
 
+/**
+ * ---------------------------------------------------------------------------
+ * Practice & Progression Calibration Settings
+ * ---------------------------------------------------------------------------
+ * Easily toggle these constants between rapid testing and production values.
+ */
+export const LESSON_WORD_COUNT = 5; // Production standard: 18
+export const STAGE_ADVANCEMENT_THRESHOLD = 0.7; // Production standard: 0.70
+
+export interface StageNotification {
+  title: string;
+  message: string;
+  type: 'advance' | 'practice';
+}
+
 interface TypingStoreState {
   engine: TypingEngine;
   activeState: ActiveTypingState;
@@ -35,6 +50,7 @@ interface TypingStoreState {
   hardcoreMode: boolean;
   expectedKeyDef: KeyDefinition | null;
   isLoadedFromDb: boolean;
+  stageNotification: StageNotification | null;
 
   // Actions
   loadFromLocalDb: () => Promise<void>;
@@ -43,6 +59,9 @@ interface TypingStoreState {
   handleKeyUp: (code: string) => void;
   restartLesson: () => void;
   nextLesson: () => void;
+  advanceToNextStage: () => void;
+  practiceNextExercise: () => void;
+  dismissStageNotification: () => void;
   toggleSound: () => void;
   toggleHardcoreMode: () => void;
   setStage: (stageId: number) => void;
@@ -58,7 +77,7 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
     stageId: initialStage,
     activeKeys: initialKeys,
     targetFocusKey: initialFocus,
-    wordCount: 16,
+    wordCount: LESSON_WORD_COUNT,
     mode: 'adaptive',
   });
 
@@ -80,6 +99,11 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
     hardcoreMode: false,
     expectedKeyDef,
     isLoadedFromDb: false,
+    stageNotification: null,
+
+    dismissStageNotification: () => {
+      set({ stageNotification: null });
+    },
 
     loadFromLocalDb: async () => {
       if (typeof window === 'undefined' || get().isLoadedFromDb) return;
@@ -95,7 +119,7 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
           stageId: stage,
           activeKeys: keys,
           targetFocusKey: focus,
-          wordCount: 18,
+          wordCount: LESSON_WORD_COUNT,
           mode: 'adaptive',
         });
 
@@ -130,7 +154,7 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
         stageId: stage,
         activeKeys: keys,
         targetFocusKey: focus,
-        wordCount: 18,
+        wordCount: LESSON_WORD_COUNT,
         mode: 'adaptive',
       });
 
@@ -239,25 +263,76 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
       const { activeStageId, keyProgress } = get();
       const currentStage = CURRICULUM_STAGES.find((s) => s.id === activeStageId);
 
-      // Check if user qualifies to unlock the next stage:
-      // All keys in the current stage must have confidence >= 0.75
       let nextStageId = activeStageId;
+      let notification: StageNotification | null = null;
+
       if (currentStage) {
-        const allKeysMastered = currentStage.keys.every((k) => {
+        const unmastered = currentStage.keys.filter((k) => {
           const prog = keyProgress[k];
-          return prog && prog.confidence >= 0.75;
+          return !prog || prog.confidence < STAGE_ADVANCEMENT_THRESHOLD;
         });
 
-        if (allKeysMastered && activeStageId < CURRICULUM_STAGES.length) {
+        if (unmastered.length === 0 && activeStageId < CURRICULUM_STAGES.length) {
           nextStageId = activeStageId + 1;
+          const nextStageObj = CURRICULUM_STAGES.find((s) => s.id === nextStageId);
+          notification = {
+            title: `🎉 Stage ${nextStageId} Unlocked!`,
+            message: `Congratulations! You mastered all keys in Stage ${activeStageId}. Now practicing: ${nextStageObj?.name ?? ''}.`,
+            type: 'advance',
+          };
+        } else {
+          const keysNeedingWork = unmastered.map((k) => {
+            const conf = Math.round((keyProgress[k]?.confidence ?? 0) * 100);
+            return `${k.toUpperCase()} (${conf}%)`;
+          });
+          notification = {
+            title: `Stage ${activeStageId} in Progress`,
+            message: `Need ${Math.round(STAGE_ADVANCEMENT_THRESHOLD * 100)}% confidence across all stage keys to unlock Stage ${activeStageId + 1}. Still working on: ${keysNeedingWork.join(', ')}.`,
+            type: 'practice',
+          };
         }
       }
+
+      if (typeof window !== 'undefined' && nextStageId !== activeStageId) {
+        persistSettings({ activeStageId: nextStageId }).catch(() => {});
+      }
+
+      get().initPractice(nextStageId);
+      set({ stageNotification: notification });
+    },
+
+    advanceToNextStage: () => {
+      const { activeStageId, keyProgress } = get();
+      const currentStage = CURRICULUM_STAGES.find((s) => s.id === activeStageId);
+
+      if (!currentStage || activeStageId >= CURRICULUM_STAGES.length) return;
+
+      const isMastered = currentStage.keys.every((k) => {
+        const prog = keyProgress[k];
+        return prog && prog.confidence >= STAGE_ADVANCEMENT_THRESHOLD;
+      });
+
+      if (!isMastered) return;
+
+      const nextStageId = activeStageId + 1;
+      const nextStageObj = CURRICULUM_STAGES.find((s) => s.id === nextStageId);
 
       if (typeof window !== 'undefined') {
         persistSettings({ activeStageId: nextStageId }).catch(() => {});
       }
 
       get().initPractice(nextStageId);
+      set({
+        stageNotification: {
+          title: `🎉 Stage ${nextStageId} Unlocked!`,
+          message: `Congratulations! You mastered all keys in Stage ${activeStageId}. Now practicing: ${nextStageObj?.name ?? ''}.`,
+          type: 'advance',
+        },
+      });
+    },
+
+    practiceNextExercise: () => {
+      get().initPractice(get().activeStageId);
     },
 
     setStage: (stageId: number) => {
@@ -299,7 +374,7 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
         stageId: stage,
         activeKeys: keys,
         targetFocusKey: focus,
-        wordCount: 16,
+        wordCount: LESSON_WORD_COUNT,
         mode: 'adaptive',
       });
 

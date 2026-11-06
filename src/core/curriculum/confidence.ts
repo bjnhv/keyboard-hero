@@ -2,21 +2,28 @@ import { KeyAccuracyMetric } from '@/types/engine';
 import { UserKeyProgress } from '@/types/curriculum';
 
 /**
+ * Calibration Constants for Confidence Scoring
+ * Easily toggle between rapid testing and production standards.
+ */
+export const MIN_ATTEMPTS_FOR_CONFIDENCE = 3; // Production standard: 5
+export const FULL_CONFIDENCE_SAMPLE_VOLUME = 12; // Production standard: 40
+
+/**
  * Computes key confidence score between 0.0 and 1.0.
  *
  * Factors:
  * 1. Accuracy Component (50% weight): Target >= 95% accuracy.
  * 2. Speed / Dwell Component (30% weight): Target dwell <= 250ms (~40 WPM equivalent per char).
- * 3. Volume / Sample Size Component (20% weight): Minimum 30 keystrokes for high confidence.
+ * 3. Volume / Sample Size Component (20% weight): Keystroke count.
  */
 export function calculateKeyConfidence(
   accuracyPct: number,
   avgDwellTimeMs: number,
   totalAttempts: number
 ): number {
-  if (totalAttempts < 5) {
+  if (totalAttempts < MIN_ATTEMPTS_FOR_CONFIDENCE) {
     // Insufficient sample size
-    return Math.min(0.2, (totalAttempts / 5) * 0.2);
+    return Math.min(0.2, (totalAttempts / MIN_ATTEMPTS_FOR_CONFIDENCE) * 0.2);
   }
 
   // 1. Accuracy score (0.0 to 1.0)
@@ -31,8 +38,7 @@ export function calculateKeyConfidence(
       : 0.5;
 
   // 3. Volume score (0.0 to 1.0)
-  // Fully confident sample at 40+ attempts
-  const volumeScore = Math.min(1.0, totalAttempts / 40);
+  const volumeScore = Math.min(1.0, totalAttempts / FULL_CONFIDENCE_SAMPLE_VOLUME);
 
   const rawConfidence = accScore * 0.5 + speedScore * 0.3 + volumeScore * 0.2;
   return Math.round(Math.max(0, Math.min(1.0, rawConfidence)) * 100) / 100;

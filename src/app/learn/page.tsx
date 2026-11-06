@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, RotateCcw } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Sparkles, Target, X } from 'lucide-react';
 import { TypingCanvas } from '@/components/typing/typing-canvas';
 import { VirtualKeyboard } from '@/components/keyboard/virtual-keyboard';
 import { HandsGuide } from '@/components/keyboard/hands-guide';
@@ -23,6 +23,8 @@ export default function LearnPage() {
   const nextLesson = useTypingStore((s) => s.nextLesson);
   const restartLesson = useTypingStore((s) => s.restartLesson);
   const loadFromLocalDb = useTypingStore((s) => s.loadFromLocalDb);
+  const stageNotification = useTypingStore((s) => s.stageNotification);
+  const dismissStageNotification = useTypingStore((s) => s.dismissStageNotification);
 
   useEffect(() => {
     setIsMounted(true);
@@ -102,6 +104,36 @@ export default function LearnPage() {
           </button>
         </div>
       </header>
+
+      {/* Stage Progression Notification Banner */}
+      {stageNotification && (
+        <div
+          className={`w-full mb-2 p-3 rounded-xl border flex items-center justify-between text-xs transition animate-in fade-in slide-in-from-top-2 ${
+            stageNotification.type === 'advance'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+              : 'bg-primary/10 border-primary/25 text-foreground'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            {stageNotification.type === 'advance' ? (
+              <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+            ) : (
+              <Target className="w-4 h-4 text-primary shrink-0" />
+            )}
+            <div>
+              <span className="font-bold mr-1.5">{stageNotification.title}:</span>
+              <span className="text-muted-foreground">{stageNotification.message}</span>
+            </div>
+          </div>
+          <button
+            onClick={dismissStageNotification}
+            className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition ml-2 cursor-pointer"
+            title="Dismiss notification"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Main Practice Flow */}
       <main className="flex-1 flex flex-col justify-center gap-6 my-auto">
