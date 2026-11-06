@@ -13,6 +13,7 @@ import {
 import { findKeyDefinition, QWERTY_LAYOUT } from '@/core/layouts';
 import { audioSynth } from '@/core/audio/mechanical-synth';
 import { LocalSessionRecord } from '@/types/sync';
+import { UiFontSize } from '@/types/user';
 import {
   persistSession,
   persistKeyProgress,
@@ -49,6 +50,7 @@ interface TypingStoreState {
   soundEnabled: boolean;
   hardcoreMode: boolean;
   showHandsGuide: boolean;
+  uiFontSize: UiFontSize;
   expectedKeyDef: KeyDefinition | null;
   isLoadedFromDb: boolean;
   stageNotification: StageNotification | null;
@@ -66,6 +68,7 @@ interface TypingStoreState {
   toggleSound: () => void;
   toggleHardcoreMode: () => void;
   toggleHandsGuide: () => void;
+  cycleFontSize: () => void;
   setStage: (stageId: number) => void;
   resetProgress: () => void;
 }
@@ -100,6 +103,7 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
     soundEnabled: true,
     hardcoreMode: false,
     showHandsGuide: true,
+    uiFontSize: 'standard',
     expectedKeyDef,
     isLoadedFromDb: false,
     stageNotification: null,
@@ -140,6 +144,7 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
           soundEnabled: settings.soundEnabled,
           hardcoreMode: settings.hardcoreMode,
           showHandsGuide: settings.showHandsGuide ?? true,
+          uiFontSize: settings.uiFontSize ?? 'standard',
           activeState: state,
           expectedKeyDef: findKeyDefinition(expectedChar, QWERTY_LAYOUT) ?? null,
         });
@@ -369,6 +374,16 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
         persistSettings({ showHandsGuide: next }).catch(() => {});
       }
       set({ showHandsGuide: next });
+    },
+
+    cycleFontSize: () => {
+      const current = get().uiFontSize;
+      const next: UiFontSize =
+        current === 'standard' ? 'large' : current === 'large' ? 'huge' : 'standard';
+      if (typeof window !== 'undefined') {
+        persistSettings({ uiFontSize: next }).catch(() => {});
+      }
+      set({ uiFontSize: next });
     },
 
     resetProgress: () => {

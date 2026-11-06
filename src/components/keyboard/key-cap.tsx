@@ -37,19 +37,19 @@ export const KeyCap: React.FC<KeyCapProps> = ({
   return (
     <div
       style={flexStyle}
-      className={`h-11 sm:h-12 m-0.5 sm:m-1 rounded-md border flex flex-col items-center justify-center relative select-none transition-all duration-75 text-xs sm:text-sm font-medium ${dynamicClasses}`}
+      className={`h-11 sm:h-12 md:h-13 lg:h-14 3xl:h-16 2k:h-20 m-0.5 sm:m-1 3xl:m-1.5 rounded-lg border flex flex-col items-center justify-center relative select-none transition-all duration-75 text-xs sm:text-sm lg:text-base 3xl:text-lg 2k:text-xl font-medium ${dynamicClasses}`}
     >
       <span>{keyDef.display}</span>
 
       {/* Tactile homing bump on F and J */}
       {keyDef.hasHomingBump && (
-        <span className="w-2.5 h-0.5 bg-muted-foreground/60 rounded-full absolute bottom-1.5" />
+        <span className="w-2.5 h-0.5 3xl:w-3.5 3xl:h-1 bg-muted-foreground/60 rounded-full absolute bottom-1.5 3xl:bottom-2" />
       )}
 
       {/* Tiny finger color dot on keycap corner */}
       {isUnlocked && (
         <span
-          className={`w-1.5 h-1.5 rounded-full absolute top-1 right-1 opacity-50 ${theme.dot}`}
+          className={`w-1.5 h-1.5 3xl:w-2 3xl:h-2 rounded-full absolute top-1 right-1 3xl:top-1.5 3xl:right-1.5 opacity-50 ${theme.dot}`}
         />
       )}
     </div>

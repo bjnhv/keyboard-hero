@@ -78,7 +78,7 @@ export default function LearnPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between p-4 sm:p-6 max-w-5xl mx-auto w-full">
+    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between p-4 sm:p-6 3xl:p-10 2k:p-14 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full">
       {/* Top Navigation Bar */}
       <header className="flex items-center justify-between w-full border-b border-border/50 pb-4 mb-4">
         <div className="flex items-center gap-2.5">

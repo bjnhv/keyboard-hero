@@ -24,6 +24,30 @@
     --input: 216 34% 17%;
     --ring: 38 92% 50%;
     --radius: 0.5rem;
+    --user-font-scale: 1;
+  }
+
+  /* -------------------------------------------------------------------------
+   * High-Resolution & 2K Responsive Root Font Scaling
+   * Automatically scales all rem-based typography, keys, buttons & containers
+   * proportionately on Full HD (1080p), 2K (1440p / QHD), and 4K displays.
+   * ------------------------------------------------------------------------- */
+  @media (min-width: 1920px) {
+    :root {
+      font-size: 17.5px;
+    }
+  }
+
+  @media (min-width: 2400px) {
+    :root {
+      font-size: 19.5px;
+    }
+  }
+
+  @media (min-width: 3200px) {
+    :root {
+      font-size: 22px;
+    }
   }
 }
 

@@ -91,7 +91,7 @@ export default function StatsPage() {
     .slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col p-4 sm:p-6 max-w-5xl mx-auto w-full gap-8">
+    <div className="min-h-screen bg-background text-foreground flex flex-col p-4 sm:p-6 3xl:p-10 2k:p-14 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full gap-8 3xl:gap-12">
       {/* Top Header */}
       <header className="flex items-center justify-between border-b border-border/50 pb-4">
         <div className="flex items-center gap-3">

@@ -128,7 +128,7 @@ const HandSvg: React.FC<HandSvgProps> = ({ hand, activeFinger, fingers }) => {
     <div className="relative flex flex-col items-center">
       <svg
         viewBox="0 0 200 230"
-        className="w-32 h-36 sm:w-44 sm:h-48 md:w-52 md:h-56 select-none transition-all duration-200"
+        className="w-32 h-36 sm:w-44 sm:h-48 md:w-52 md:h-56 3xl:w-64 3xl:h-70 2k:w-76 2k:h-84 select-none transition-all duration-200"
       >
         <defs>
           {/* Subtle drop shadow filters for active glowing fingers */}
@@ -290,27 +290,27 @@ export const TransparentHands: React.FC = () => {
   return (
     <div className="w-full flex flex-col items-center gap-2 animate-in fade-in duration-300">
       {/* Transparent Hands Graphic Container */}
-      <div className="relative flex items-center justify-center gap-4 sm:gap-12 md:gap-16 px-4 py-2 bg-secondary/15 rounded-2xl border border-border/40 backdrop-blur-sm max-w-2xl w-full">
+      <div className="relative flex items-center justify-center gap-4 sm:gap-12 md:gap-16 3xl:gap-20 2k:gap-24 px-4 py-2 3xl:px-8 3xl:py-4 bg-secondary/15 rounded-2xl 3xl:rounded-3xl border border-border/40 backdrop-blur-sm max-w-2xl xl:max-w-3xl 3xl:max-w-4xl 2k:max-w-5xl w-full">
         {/* Left Hand SVG */}
         <HandSvg hand="left" activeFinger={activeFinger} fingers={LEFT_FINGERS} />
 
         {/* Center Guidance Badge */}
-        <div className="hidden sm:flex flex-col items-center justify-center px-3 py-2 rounded-xl bg-card/60 border border-border/50 text-center min-w-[120px] shadow-sm">
-          <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">
+        <div className="hidden sm:flex flex-col items-center justify-center px-3 py-2 3xl:px-5 3xl:py-3.5 rounded-xl 3xl:rounded-2xl bg-card/60 border border-border/50 text-center min-w-[120px] 3xl:min-w-[160px] shadow-sm">
+          <span className="text-[10px] 3xl:text-xs text-muted-foreground uppercase font-semibold tracking-wider">
             Active Finger
           </span>
           {expectedKeyDef && currentTheme ? (
-            <div className="flex flex-col items-center mt-1">
-              <span className={`text-xs font-bold ${currentTheme.text} flex items-center gap-1.5`}>
-                <span className={`w-2 h-2 rounded-full ${currentTheme.dot}`} />
+            <div className="flex flex-col items-center mt-1 3xl:mt-1.5">
+              <span className={`text-xs 3xl:text-sm font-bold ${currentTheme.text} flex items-center gap-1.5`}>
+                <span className={`w-2 h-2 3xl:w-2.5 3xl:h-2.5 rounded-full ${currentTheme.dot}`} />
                 {expectedKeyDef.finger.replace('-', ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
               </span>
-              <span className="text-[11px] font-mono text-foreground font-semibold mt-0.5">
+              <span className="text-[11px] 3xl:text-xs font-mono text-foreground font-semibold mt-0.5">
                 Target: &quot;{expectedKeyDef.display || expectedKeyDef.key}&quot;
               </span>
             </div>
           ) : (
-            <span className="text-xs text-muted-foreground/60 mt-1">Home Position</span>
+            <span className="text-xs 3xl:text-sm text-muted-foreground/60 mt-1">Home Position</span>
           )}
         </div>
 
@@ -320,3 +320,4 @@ export const TransparentHands: React.FC = () => {
     </div>
   );
 };
+

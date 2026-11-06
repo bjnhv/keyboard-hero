@@ -45,7 +45,7 @@ export const SessionSummaryModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div className="bg-card border border-border rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl flex flex-col items-center text-center">
+      <div className="bg-card border border-border rounded-2xl 3xl:rounded-3xl max-w-xl xl:max-w-2xl 3xl:max-w-3xl 2k:max-w-4xl w-full p-6 sm:p-8 3xl:p-10 shadow-2xl flex flex-col items-center text-center">
         {/* Header Icon */}
         <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-3">
           <Trophy className="w-7 h-7" />

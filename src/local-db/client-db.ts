@@ -5,6 +5,7 @@ import { UserSettings } from '@/types/user';
 
 export const DEFAULT_SETTINGS: UserSettings = {
   theme: 'dark',
+  uiFontSize: 'standard',
   soundEnabled: true,
   soundVolume: 0.25,
   soundTheme: 'cherry-blue',

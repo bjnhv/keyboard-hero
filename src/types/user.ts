@@ -5,10 +5,13 @@
 import { KeyboardLayoutType } from './keyboard';
 
 export type SoundTheme = 'cherry-blue' | 'cherry-brown' | 'cherry-red' | 'typewriter' | 'bubble';
+export type UiFontSize = 'standard' | 'large' | 'huge';
 
 export interface UserSettings {
   /** UI Theme */
   theme: 'dark' | 'light' | 'system';
+  /** UI Font Sizing Scale (Standard, Large for 2K/1440p, Huge for distant screens) */
+  uiFontSize?: UiFontSize;
   /** Sound enabled toggle */
   soundEnabled: boolean;
   /** Volume level between 0.0 and 1.0 */
