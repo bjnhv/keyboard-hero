@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
-  ArrowLeft,
   Flame,
   Zap,
   Gauge,
@@ -17,6 +16,7 @@ import {
   Clock,
   CheckCircle2,
 } from 'lucide-react';
+import { AppBar } from '@/components/navigation';
 import { loadArcadeScores, ArcadeScoreRecord } from '@/local-db';
 
 export default function ArcadeHubPage() {
@@ -31,39 +31,14 @@ export default function ArcadeHubPage() {
   if (!isMounted) return null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col p-4 sm:p-6 3xl:p-10 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full gap-8">
+    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between px-4 sm:px-6 3xl:px-10 2k:px-14 pt-2 sm:pt-3 pb-8 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full gap-6">
       {/* Top Header */}
-      <header className="flex items-center justify-between border-b border-border/50 pb-4">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Home</span>
-          </Link>
-          <span className="text-border">/</span>
-          <span className="text-sm font-bold text-foreground flex items-center gap-1.5">
-            <Gamepad2 className="w-4 h-4 text-primary" />
-            Arcade Hub
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Link
-            href="/learn"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary text-xs font-semibold hover:bg-secondary/80 border border-border transition"
-          >
-            Curriculum
-          </Link>
-          <Link
-            href="/stats"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary text-xs font-semibold hover:bg-secondary/80 border border-border transition"
-          >
-            Heatmap
-          </Link>
-        </div>
-      </header>
+      <AppBar>
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-bold">
+          <Gamepad2 className="w-3.5 h-3.5 text-rose-400" />
+          <span>Arcade Zone</span>
+        </span>
+      </AppBar>
 
       {/* Hero Banner */}
       <section className="text-center flex flex-col items-center gap-3 py-4">

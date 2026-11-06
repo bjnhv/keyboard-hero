@@ -3,7 +3,6 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import {
-  ArrowLeft,
   RotateCcw,
   Sparkles,
   Target,
@@ -12,8 +11,8 @@ import {
   Volume2,
   VolumeX,
   Flame,
-  Gamepad2,
 } from 'lucide-react';
+import { AppBar } from '@/components/navigation';
 import { TypingCanvas } from '@/components/typing/typing-canvas';
 import { VirtualKeyboard } from '@/components/keyboard/virtual-keyboard';
 import { HandsGuide } from '@/components/keyboard/hands-guide';
@@ -81,109 +80,80 @@ export default function LearnPage() {
   return (
     <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-background text-foreground flex flex-col justify-between px-4 sm:px-6 3xl:px-10 2k:px-14 py-2 sm:py-3 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full">
       {/* Top Navigation Bar */}
-      <header className="flex items-center justify-between w-full border-b border-border/50 pb-2 mb-1.5 sm:pb-2.5 sm:mb-2 shrink-0">
-        <div className="flex items-center gap-2.5">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition"
+      <AppBar>
+        {/* Hands Guide Toggle Button */}
+        <button
+          onClick={toggleHandsGuide}
+          title={showHandsGuide ? 'Hands Visualizer: ON (Click to hide)' : 'Hands Visualizer: OFF (Click to show)'}
+          className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
+            showHandsGuide
+              ? 'bg-primary/15 text-primary border-primary/40 font-semibold shadow-xs'
+              : 'bg-secondary text-muted-foreground/60 border-border hover:text-foreground'
+          }`}
+        >
+          <Hand className="w-3.5 h-3.5" />
+          <span className="hidden md:inline">Hands</span>
+        </button>
+
+        {/* Sound Toggle Button */}
+        <button
+          onClick={toggleSound}
+          title={soundEnabled ? 'Mechanical Sound: ON' : 'Mechanical Sound: MUTED'}
+          className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
+            soundEnabled
+              ? 'bg-secondary text-foreground border-border hover:bg-secondary/80'
+              : 'bg-secondary/40 text-muted-foreground/50 border-border/40'
+          }`}
+        >
+          {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-emerald-400" /> : <VolumeX className="w-3.5 h-3.5" />}
+          <span className="hidden md:inline">Sound</span>
+        </button>
+
+        {/* Hardcore Mode Toggle Button */}
+        <button
+          onClick={toggleHardcoreMode}
+          title={hardcoreMode ? 'Hardcore Mode: ACTIVE' : 'Hardcore Mode: OFF'}
+          className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
+            hardcoreMode
+              ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-bold'
+              : 'bg-secondary text-muted-foreground/60 border-border hover:text-foreground'
+          }`}
+        >
+          <Flame className={`w-3.5 h-3.5 ${hardcoreMode ? 'text-rose-400' : ''}`} />
+          <span className="hidden md:inline">Hardcore</span>
+        </button>
+
+        <div className="h-4 w-[1px] bg-border/60 mx-0.5 hidden sm:block" />
+
+        {/* Stage Selector */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <label htmlFor="stage-select" className="text-xs text-muted-foreground hidden lg:inline">
+            Stage:
+          </label>
+          <select
+            id="stage-select"
+            value={activeStageId}
+            onChange={(e) => setStage(Number(e.target.value))}
+            className="bg-secondary text-foreground text-xs font-semibold py-1.5 px-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Home</span>
-          </Link>
-          <span className="text-border">/</span>
-          <Link
-            href="/stats"
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition font-medium"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span className="hidden sm:inline">Heatmap</span>
-          </Link>
-          <span className="text-border">/</span>
-          <Link
-            href="/arcade"
-            className="inline-flex items-center gap-1.5 text-xs text-rose-400 hover:text-rose-300 transition font-bold"
-          >
-            <Gamepad2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Arcade</span>
-          </Link>
+            {CURRICULUM_STAGES.map((stage) => (
+              <option key={stage.id} value={stage.id}>
+                Stage {stage.id}: {stage.name}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Toolbar Controls */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          {/* Hands Guide Toggle Button */}
-          <button
-            onClick={toggleHandsGuide}
-            title={showHandsGuide ? 'Hands Visualizer: ON (Click to hide)' : 'Hands Visualizer: OFF (Click to show)'}
-            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
-              showHandsGuide
-                ? 'bg-primary/15 text-primary border-primary/40 font-semibold shadow-xs'
-                : 'bg-secondary text-muted-foreground/60 border-border hover:text-foreground'
-            }`}
-          >
-            <Hand className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Hands</span>
-          </button>
-
-          {/* Sound Toggle Button */}
-          <button
-            onClick={toggleSound}
-            title={soundEnabled ? 'Mechanical Sound: ON' : 'Mechanical Sound: MUTED'}
-            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
-              soundEnabled
-                ? 'bg-secondary text-foreground border-border hover:bg-secondary/80'
-                : 'bg-secondary/40 text-muted-foreground/50 border-border/40'
-            }`}
-          >
-            {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-emerald-400" /> : <VolumeX className="w-3.5 h-3.5" />}
-            <span className="hidden md:inline">Sound</span>
-          </button>
-
-          {/* Hardcore Mode Toggle Button */}
-          <button
-            onClick={toggleHardcoreMode}
-            title={hardcoreMode ? 'Hardcore Mode: ACTIVE' : 'Hardcore Mode: OFF'}
-            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
-              hardcoreMode
-                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-bold'
-                : 'bg-secondary text-muted-foreground/60 border-border hover:text-foreground'
-            }`}
-          >
-            <Flame className={`w-3.5 h-3.5 ${hardcoreMode ? 'text-rose-400' : ''}`} />
-            <span className="hidden md:inline">Hardcore</span>
-          </button>
-
-          <div className="h-4 w-[1px] bg-border/60 mx-0.5 hidden sm:block" />
-
-          {/* Stage Selector */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <label htmlFor="stage-select" className="text-xs text-muted-foreground hidden lg:inline">
-              Stage:
-            </label>
-            <select
-              id="stage-select"
-              value={activeStageId}
-              onChange={(e) => setStage(Number(e.target.value))}
-              className="bg-secondary text-foreground text-xs font-semibold py-1.5 px-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
-            >
-              {CURRICULUM_STAGES.map((stage) => (
-                <option key={stage.id} value={stage.id}>
-                  Stage {stage.id}: {stage.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Reset Progress Button */}
-          <button
-            onClick={() => setShowResetConfirm(true)}
-            title="Reset All Curriculum Progress"
-            className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-rose-500/20 text-muted-foreground hover:text-rose-400 border border-border hover:border-rose-500/40 transition cursor-pointer"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Reset</span>
-          </button>
-        </div>
-      </header>
+        {/* Reset Progress Button */}
+        <button
+          onClick={() => setShowResetConfirm(true)}
+          title="Reset All Curriculum Progress"
+          className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-rose-500/20 text-muted-foreground hover:text-rose-400 border border-border hover:border-rose-500/40 transition cursor-pointer"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Reset</span>
+        </button>
+      </AppBar>
 
       {/* Stage Progression Notification Banner */}
       {stageNotification && (

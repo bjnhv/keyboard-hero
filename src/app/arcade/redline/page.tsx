@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
-  ArrowLeft,
   Flame,
   RotateCcw,
   Trophy,
@@ -15,6 +14,7 @@ import {
   Sparkles,
   CheckCircle2,
 } from 'lucide-react';
+import { AppBar } from '@/components/navigation';
 import { SpeedometerGauge } from '@/components/arcade/speedometer-gauge';
 import {
   useRedlineStore,
@@ -96,7 +96,7 @@ export default function RedlineGamePage() {
   return (
     <div
       onClick={() => inputRef.current?.focus()}
-      className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-background text-foreground flex flex-col justify-between px-4 sm:px-6 3xl:px-10 py-2 sm:py-3 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full select-none cursor-text"
+      className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-background text-foreground flex flex-col justify-between px-4 sm:px-6 3xl:px-10 2k:px-14 py-2 sm:py-3 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full select-none cursor-text"
     >
       {/* Hidden input to capture keystrokes */}
       <input
@@ -111,24 +111,9 @@ export default function RedlineGamePage() {
       />
 
       {/* Top Header */}
-      <header className="flex items-center justify-between border-b border-border/50 pb-2 mb-1.5 sm:pb-2.5 sm:mb-2 shrink-0">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/arcade"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Arcade Hub</span>
-          </Link>
-          <span className="text-border">/</span>
-          <span className="text-sm font-bold text-foreground flex items-center gap-1.5">
-            <Gauge className="w-4 h-4 text-primary" />
-            Redline RPM
-          </span>
-        </div>
-
+      <AppBar subTitle="Redline RPM" subIcon={<Gauge className="w-3.5 h-3.5 text-primary" />}>
         {/* Tier Selector & Audio Toggle */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Difficulty Dropdown */}
           <div className="flex items-center gap-1 bg-secondary/60 p-1 rounded-xl border border-border/80">
             {(Object.keys(REDLINE_TIERS) as RedlineDifficulty[]).map((tierKey) => {
@@ -138,7 +123,7 @@ export default function RedlineGamePage() {
                 <button
                   key={tierKey}
                   onClick={() => setDifficulty(tierKey)}
-                  className={`px-2.5 py-1 3xl:px-3 3xl:py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                  className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
                     isSelected
                       ? 'bg-primary text-primary-foreground shadow-xs font-bold'
                       : 'text-muted-foreground hover:text-foreground'
@@ -153,7 +138,7 @@ export default function RedlineGamePage() {
           <button
             onClick={toggleAudio}
             title={soundEnabled ? 'Disable Engine SFX' : 'Enable Engine SFX'}
-            className="p-2 rounded-xl bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground border border-border transition cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-lg bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground border border-border transition cursor-pointer"
           >
             {soundEnabled ? (
               <Volume2 className="w-4 h-4 text-emerald-400" />
@@ -162,7 +147,7 @@ export default function RedlineGamePage() {
             )}
           </button>
         </div>
-      </header>
+      </AppBar>
 
       {/* Main Game Stage */}
       <main className="flex-1 flex flex-col items-center justify-center gap-6 my-auto">
