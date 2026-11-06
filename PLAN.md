@@ -60,12 +60,12 @@ graph TD
   - Stage 5: Top row extremes & bottom row (`o`, `p`, `w`, `q`, `n`, `m`, `c`, `v`).
   - Stage 6: Remaining rare letters (`b`, `x`, `z`).
   - Stage 7: Basic punctuation (`,`, `.`, `'`, `?`).
-- [ ] **Curriculum Expansion (Advanced & Code Stages)**:
-  - [ ] Stage 8: Number Row (`1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `0`).
-  - [ ] Stage 9: Shift Symbols & Enclosing Brackets (`!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `(`, `)`, `[`, `]`, `{`, `}`).
-  - [ ] Stage 10: Programming Operators (`=`, `+`, `-`, `_`, `/`, `\`, `|`, `<`, `>`, `:`, `~`, `` ` ``).
-  - [ ] Stage 11: Mixed Capitalization & Casing Drills (CamelCase, snake_case, PascalCase).
-  - [ ] Stage 12: Full Code Syntax Drills (JavaScript, TypeScript, Python, HTML/CSS snippet typing).
+- [x] **Curriculum Expansion (Advanced & Code Stages)**:
+  - [x] Stage 8: Number Row (`1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `0`).
+  - [x] Stage 9: Shift Symbols & Enclosing Brackets (`!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `(`, `)`, `[`, `]`, `{`, `}`).
+  - [x] Stage 10: Programming Operators (`=`, `+`, `-`, `_`, `/`, `\`, `|`, `<`, `>`, `:`, `~`, `` ` ``).
+  - [x] Stage 11: Mixed Capitalization & Casing Drills (CamelCase, snake_case, PascalCase).
+  - [x] Stage 12: Full Code Syntax Drills (JavaScript, TypeScript, Python, HTML/CSS snippet typing).
 - [x] **Confidence Score Engine**:
   - Calculate per-key score: $Confidence = f(\text{Accuracy}, \text{Speed}, \text{Error Frequency})$.
   - Track individual key dwell times and error rates.
@@ -83,10 +83,10 @@ graph TD
   - Dynamic keypress animations (reflecting real-time physical keydown).
 - [x] **Hands & Finger Guide Component (Fingers Row)**:
   - 10-finger color-coded pill indicators (Pinky, Ring, Middle, Index, Thumbs) highlighting the active finger.
-- [ ] **Transparent Hands Visual Overlay**:
-  - [ ] Semi-transparent SVG hand silhouettes (Left & Right hands) visually positioned with finger bones/joints.
-  - [ ] Active finger dynamically lights up / pulses in its assigned color (rose, orange, amber, emerald, blue) to teach physical posture.
-  - [ ] Dedicated Toolbar Toggle Button: On/Off switch with icon in the header controls to toggle the hands overlay on/off based on user preference.
+- [x] **Transparent Hands Visual Overlay**:
+  - [x] Semi-transparent SVG hand silhouettes (Left & Right hands) visually positioned with finger bones/joints.
+  - [x] Active finger dynamically lights up / pulses in its assigned color (rose, orange, amber, emerald, blue) to teach physical posture.
+  - [x] Dedicated Toolbar Toggle Button: On/Off switch with icon in the header controls to toggle the hands overlay on/off based on user preference.
 - [x] **"Hardcore Mode"**:
   - Toggle to hide the visual keyboard or mask upcoming characters to force physical muscle memory.
 

@@ -13,8 +13,12 @@ import { generateAdaptiveLesson } from '../generator';
 
 describe('Curriculum Stages', () => {
   it('defines sequential learning stages starting with home row', () => {
-    expect(CURRICULUM_STAGES.length).toBeGreaterThanOrEqual(6);
+    expect(CURRICULUM_STAGES.length).toBeGreaterThanOrEqual(12);
     expect(CURRICULUM_STAGES[0].keys).toEqual(['f', 'j', 'd', 'k']);
+    expect(CURRICULUM_STAGES[7].id).toBe(8);
+    expect(CURRICULUM_STAGES[7].keys).toContain('1');
+    expect(CURRICULUM_STAGES[8].id).toBe(9);
+    expect(CURRICULUM_STAGES[8].keys).toContain('!');
   });
 
   it('aggregates unlocked keys cumulatively up to stage', () => {
@@ -118,6 +122,50 @@ describe('Adaptive Lesson Generator', () => {
     // Focus key 'e' should appear in majority of words
     const wordsWithFocusKey = lesson.words.filter((w) => w.includes('e'));
     expect(wordsWithFocusKey.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it('generates exercises with number reaches in Stage 8', () => {
+    const stage8Keys = getUnlockedKeysUpToStage(8);
+    const lesson = generateAdaptiveLesson({
+      stageId: 8,
+      activeKeys: stage8Keys,
+      targetFocusKey: '5',
+      wordCount: 10,
+      mode: 'adaptive',
+    });
+
+    expect(lesson.words).toHaveLength(10);
+    // At least some words should feature the target number key
+    const hasNumber = lesson.words.some((w) => w.includes('5'));
+    expect(hasNumber).toBe(true);
+
+    // Every char must be unlocked
+    for (const word of lesson.words) {
+      for (const char of word) {
+        expect(stage8Keys).toContain(char);
+      }
+    }
+  });
+
+  it('generates exercises with brackets in Stage 9', () => {
+    const stage9Keys = getUnlockedKeysUpToStage(9);
+    const lesson = generateAdaptiveLesson({
+      stageId: 9,
+      activeKeys: stage9Keys,
+      targetFocusKey: '(',
+      wordCount: 10,
+      mode: 'adaptive',
+    });
+
+    expect(lesson.words).toHaveLength(10);
+    const hasBracket = lesson.words.some((w) => w.includes('('));
+    expect(hasBracket).toBe(true);
+
+    for (const word of lesson.words) {
+      for (const char of word) {
+        expect(stage9Keys).toContain(char);
+      }
+    }
   });
 });
 

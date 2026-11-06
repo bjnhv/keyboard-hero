@@ -57,6 +57,46 @@ export const CURRICULUM_STAGES: KeyStage[] = [
     targetWpm: 40,
     targetAccuracy: 93,
   },
+  {
+    id: 8,
+    name: 'Number Row Reaches',
+    description: 'Reach upward to the number row (1 through 0) with correct fingers.',
+    keys: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+    targetWpm: 35,
+    targetAccuracy: 92,
+  },
+  {
+    id: 9,
+    name: 'Shift Symbols & Brackets',
+    description: 'Shift-key symbols, parenthesis, square brackets, and curly braces.',
+    keys: ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '[', ']', '{', '}'],
+    targetWpm: 30,
+    targetAccuracy: 90,
+  },
+  {
+    id: 10,
+    name: 'Code & Math Operators',
+    description: 'Arithmetic, logical operators, slashes, angle brackets, and backticks.',
+    keys: ['=', '+', '-', '_', '/', '\\', '|', '<', '>', ':', '~', '`'],
+    targetWpm: 32,
+    targetAccuracy: 90,
+  },
+  {
+    id: 11,
+    name: 'Developer Casing & Identifiers',
+    description: 'Practice camelCase, PascalCase, snake_case, and UPPER_CASE transitions.',
+    keys: ['_', '-', 'A', 'C', 'S', 'P', 'T', 'D'],
+    targetWpm: 38,
+    targetAccuracy: 93,
+  },
+  {
+    id: 12,
+    name: 'Full Code Syntax & Keywords',
+    description: 'TypeScript/JavaScript keywords, arrow functions, and statement syntax.',
+    keys: [';', '{', '}', '(', ')', '=', '>', '<', '/', ':'],
+    targetWpm: 42,
+    targetAccuracy: 94,
+  },
 ];
 
 /**

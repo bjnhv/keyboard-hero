@@ -2,7 +2,17 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, RotateCcw, Sparkles, Target, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  RotateCcw,
+  Sparkles,
+  Target,
+  X,
+  Hand,
+  Volume2,
+  VolumeX,
+  Flame,
+} from 'lucide-react';
 import { TypingCanvas } from '@/components/typing/typing-canvas';
 import { VirtualKeyboard } from '@/components/keyboard/virtual-keyboard';
 import { HandsGuide } from '@/components/keyboard/hands-guide';
@@ -19,6 +29,11 @@ export default function LearnPage() {
   const setStage = useTypingStore((s) => s.setStage);
   const resetProgress = useTypingStore((s) => s.resetProgress);
   const hardcoreMode = useTypingStore((s) => s.hardcoreMode);
+  const toggleHardcoreMode = useTypingStore((s) => s.toggleHardcoreMode);
+  const soundEnabled = useTypingStore((s) => s.soundEnabled);
+  const toggleSound = useTypingStore((s) => s.toggleSound);
+  const showHandsGuide = useTypingStore((s) => s.showHandsGuide);
+  const toggleHandsGuide = useTypingStore((s) => s.toggleHandsGuide);
   const completedMetrics = useTypingStore((s) => s.completedMetrics);
   const nextLesson = useTypingStore((s) => s.nextLesson);
   const restartLesson = useTypingStore((s) => s.restartLesson);
@@ -74,11 +89,56 @@ export default function LearnPage() {
           <span>Home</span>
         </Link>
 
-        {/* Stage Selector & Reset Controls */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Toolbar Controls */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* Hands Guide Toggle Button */}
+          <button
+            onClick={toggleHandsGuide}
+            title={showHandsGuide ? 'Hands Visualizer: ON (Click to hide)' : 'Hands Visualizer: OFF (Click to show)'}
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
+              showHandsGuide
+                ? 'bg-primary/15 text-primary border-primary/40 font-semibold shadow-xs'
+                : 'bg-secondary text-muted-foreground/60 border-border hover:text-foreground'
+            }`}
+          >
+            <Hand className="w-3.5 h-3.5" />
+            <span className="hidden md:inline">Hands</span>
+          </button>
+
+          {/* Sound Toggle Button */}
+          <button
+            onClick={toggleSound}
+            title={soundEnabled ? 'Mechanical Sound: ON' : 'Mechanical Sound: MUTED'}
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
+              soundEnabled
+                ? 'bg-secondary text-foreground border-border hover:bg-secondary/80'
+                : 'bg-secondary/40 text-muted-foreground/50 border-border/40'
+            }`}
+          >
+            {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-emerald-400" /> : <VolumeX className="w-3.5 h-3.5" />}
+            <span className="hidden md:inline">Sound</span>
+          </button>
+
+          {/* Hardcore Mode Toggle Button */}
+          <button
+            onClick={toggleHardcoreMode}
+            title={hardcoreMode ? 'Hardcore Mode: ACTIVE' : 'Hardcore Mode: OFF'}
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
+              hardcoreMode
+                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-bold'
+                : 'bg-secondary text-muted-foreground/60 border-border hover:text-foreground'
+            }`}
+          >
+            <Flame className={`w-3.5 h-3.5 ${hardcoreMode ? 'text-rose-400' : ''}`} />
+            <span className="hidden md:inline">Hardcore</span>
+          </button>
+
+          <div className="h-4 w-[1px] bg-border/60 mx-0.5 hidden sm:block" />
+
+          {/* Stage Selector */}
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <label htmlFor="stage-select" className="text-xs text-muted-foreground hidden sm:inline">
-              Curriculum:
+            <label htmlFor="stage-select" className="text-xs text-muted-foreground hidden lg:inline">
+              Stage:
             </label>
             <select
               id="stage-select"
@@ -94,13 +154,14 @@ export default function LearnPage() {
             </select>
           </div>
 
+          {/* Reset Progress Button */}
           <button
             onClick={() => setShowResetConfirm(true)}
             title="Reset All Curriculum Progress"
             className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-rose-500/20 text-muted-foreground hover:text-rose-400 border border-border hover:border-rose-500/40 transition cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Reset Progress</span>
+            <span className="hidden sm:inline">Reset</span>
           </button>
         </div>
       </header>

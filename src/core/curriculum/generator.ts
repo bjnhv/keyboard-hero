@@ -1,6 +1,7 @@
 import { GeneratedLesson, LessonConfig } from '@/types/curriculum';
 
 const VOWELS = new Set(['a', 'e', 'i', 'o', 'u']);
+const PUNCTUATION = new Set(['.', ',', "'", '?', '!', ';', ':']);
 
 /**
  * Generates an adaptive lesson text tailored to the user's unlocked keys and weakest finger.
@@ -9,8 +10,11 @@ export function generateAdaptiveLesson(config: LessonConfig): GeneratedLesson {
   const { stageId, activeKeys, targetFocusKey, wordCount, mode } = config;
   const words: string[] = [];
   const focusKeys: string[] = targetFocusKey ? [targetFocusKey] : [];
+  const activeKeySet = new Set(activeKeys);
 
-  const availableVowels = activeKeys.filter((k) => VOWELS.has(k.toLowerCase()));
+  const availableVowels = activeKeys.filter(
+    (k) => VOWELS.has(k.toLowerCase()) && /^[a-z]$/i.test(k)
+  );
   const availableConsonants = activeKeys.filter(
     (k) => !VOWELS.has(k.toLowerCase()) && /^[a-z]$/i.test(k)
   );
@@ -28,7 +32,8 @@ export function generateAdaptiveLesson(config: LessonConfig): GeneratedLesson {
       word = generatePronounceableWord(
         availableVowels,
         availableConsonants,
-        shouldIncludeFocus ? targetFocusKey : undefined
+        shouldIncludeFocus ? targetFocusKey : undefined,
+        activeKeySet
       );
     } else {
       // Early stages (e.g. Stage 1: f, j, d, k) without vowels: generate rhythmic patterns
@@ -38,7 +43,12 @@ export function generateAdaptiveLesson(config: LessonConfig): GeneratedLesson {
       );
     }
 
-    words.push(word);
+    // Guarantee that every single character in the word strictly belongs to activeKeys
+    const sanitizedWord = Array.from(word)
+      .filter((ch) => activeKeySet.has(ch))
+      .join('');
+
+    words.push(sanitizedWord.length > 0 ? sanitizedWord : activeKeys[0] || 'f');
   }
 
   const text = words.join(' ');
@@ -55,12 +65,14 @@ export function generateAdaptiveLesson(config: LessonConfig): GeneratedLesson {
 }
 
 /**
- * Builds a pronounceable pseudo-word using alternating consonants and vowels (CVC, CV, VC, CVCV).
+ * Builds a pronounceable pseudo-word using alternating consonants and vowels (CVC, CV, VC, CVCV),
+ * with natural handling for punctuation, numbers, brackets, and symbols.
  */
 function generatePronounceableWord(
   vowels: string[],
   consonants: string[],
-  focusKey?: string
+  focusKey?: string,
+  activeKeySet?: Set<string>
 ): string {
   // Target length: 3 to 6 characters
   const patterns = ['CVC', 'VC', 'CV', 'CVCV', 'VCV', 'CVCC'];
@@ -78,19 +90,36 @@ function generatePronounceableWord(
 
   // Ensure focus key is present if requested
   if (focusKey && !chars.includes(focusKey)) {
-    const isVowel = VOWELS.has(focusKey.toLowerCase());
-    const candidates = chars
-      .map((ch, idx) => ({ ch, idx }))
-      .filter(({ ch }) =>
-        isVowel ? VOWELS.has(ch.toLowerCase()) : !VOWELS.has(ch.toLowerCase())
-      );
-
-    if (candidates.length > 0) {
-      const targetSlot =
-        candidates[Math.floor(Math.random() * candidates.length)].idx;
-      chars[targetSlot] = focusKey;
-    } else {
+    if (PUNCTUATION.has(focusKey)) {
+      // Natural trailing punctuation for sentences/drills
       chars.push(focusKey);
+    } else if (focusKey === '(' && activeKeySet?.has(')')) {
+      chars.unshift('(');
+      chars.push(')');
+    } else if (focusKey === '[' && activeKeySet?.has(']')) {
+      chars.unshift('[');
+      chars.push(']');
+    } else if (focusKey === '{' && activeKeySet?.has('}')) {
+      chars.unshift('{');
+      chars.push('}');
+    } else if (/^[0-9]$/.test(focusKey)) {
+      // Numbers can attach as identifier or suffix (e.g. word1)
+      chars.push(focusKey);
+    } else {
+      const isVowel = VOWELS.has(focusKey.toLowerCase());
+      const candidates = chars
+        .map((ch, idx) => ({ ch, idx }))
+        .filter(({ ch }) =>
+          isVowel ? VOWELS.has(ch.toLowerCase()) : !VOWELS.has(ch.toLowerCase())
+        );
+
+      if (candidates.length > 0) {
+        const targetSlot =
+          candidates[Math.floor(Math.random() * candidates.length)].idx;
+        chars[targetSlot] = focusKey;
+      } else {
+        chars.push(focusKey);
+      }
     }
   }
 

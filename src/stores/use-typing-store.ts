@@ -48,6 +48,7 @@ interface TypingStoreState {
   keyProgress: Record<string, UserKeyProgress>;
   soundEnabled: boolean;
   hardcoreMode: boolean;
+  showHandsGuide: boolean;
   expectedKeyDef: KeyDefinition | null;
   isLoadedFromDb: boolean;
   stageNotification: StageNotification | null;
@@ -64,6 +65,7 @@ interface TypingStoreState {
   dismissStageNotification: () => void;
   toggleSound: () => void;
   toggleHardcoreMode: () => void;
+  toggleHandsGuide: () => void;
   setStage: (stageId: number) => void;
   resetProgress: () => void;
 }
@@ -97,6 +99,7 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
     keyProgress: {},
     soundEnabled: true,
     hardcoreMode: false,
+    showHandsGuide: true,
     expectedKeyDef,
     isLoadedFromDb: false,
     stageNotification: null,
@@ -136,6 +139,7 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
           keyProgress: progressMap,
           soundEnabled: settings.soundEnabled,
           hardcoreMode: settings.hardcoreMode,
+          showHandsGuide: settings.showHandsGuide ?? true,
           activeState: state,
           expectedKeyDef: findKeyDefinition(expectedChar, QWERTY_LAYOUT) ?? null,
         });
@@ -357,6 +361,14 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
         persistSettings({ hardcoreMode: next }).catch(() => {});
       }
       set((s) => ({ hardcoreMode: !s.hardcoreMode }));
+    },
+
+    toggleHandsGuide: () => {
+      const next = !get().showHandsGuide;
+      if (typeof window !== 'undefined') {
+        persistSettings({ showHandsGuide: next }).catch(() => {});
+      }
+      set({ showHandsGuide: next });
     },
 
     resetProgress: () => {
