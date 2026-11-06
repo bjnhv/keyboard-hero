@@ -213,6 +213,22 @@ To serve Keyboard Hero publicly on the web while preserving sub-millisecond typi
 
 ---
 
+## Live Production Deployment Status
+
+- **Host**: Vercel Production
+- **Live URLs**:
+  - Main Project Domain: [https://keyboard-hero-app.vercel.app](https://keyboard-hero-app.vercel.app)
+  - Vercel Auto Domain: [https://test-tau-vert.vercel.app](https://test-tau-vert.vercel.app)
+  - Project Dashboard: [https://vercel.com/bjnhv/keyboard-hero](https://vercel.com/bjnhv/keyboard-hero)
+- **Database & Cloud Services**: Neon Serverless PostgreSQL (`eu-central-1`)
+  - Pooled Connection: `DATABASE_URL` (AWS Frankfurt pooler)
+  - Unpooled Connection: `DATABASE_URL_UNPOOLED` (DDL migrations)
+  - Auth: Neon Hosted Better Auth (`/neondb/auth`)
+  - Serverless Functions: Neon Compute (`/hello`)
+- **Health Check**: [https://keyboard-hero-app.vercel.app/api/neon/health](https://keyboard-hero-app.vercel.app/api/neon/health) (Status: `healthy`, 100% verified)
+
+---
+
 ## Verification & Quality Gates
 - [ ] **Performance**: 60fps input loop with $< 8\text{ms}$ total keystroke-to-render latency.
 - [ ] **Offline Resilience**: Practice 5 lessons with airplane mode turned on -> reload -> all progress preserved -> reconnect -> server successfully synced.
