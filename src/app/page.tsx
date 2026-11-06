@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Keyboard, Zap, WifiOff, Trophy, Sparkles } from "lucide-react";
+import { Keyboard, Zap, WifiOff, Trophy, Sparkles, Gamepad2 } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -50,6 +50,13 @@ export default function HomePage() {
           className="px-6 py-3 3xl:px-8 3xl:py-4 3xl:text-lg rounded-xl bg-secondary text-secondary-foreground font-semibold hover:bg-secondary/80 transition border border-border"
         >
           View Heatmap
+        </Link>
+        <Link
+          href="/arcade"
+          className="px-6 py-3 3xl:px-8 3xl:py-4 3xl:text-lg rounded-xl bg-gradient-to-r from-rose-600 via-primary to-amber-600 text-white font-bold hover:opacity-90 transition shadow-lg shadow-rose-900/30 flex items-center gap-2"
+        >
+          <Gamepad2 className="w-5 h-5" />
+          <span>Arcade Mode</span>
         </Link>
       </div>
     </main>

@@ -22,11 +22,22 @@ export interface LocalSettingsRecord extends UserSettings {
   activeStageId: number;
 }
 
+export interface ArcadeScoreRecord {
+  id: string;
+  gameId: 'redline' | 'defuse';
+  difficulty: string;
+  score: number;
+  wpm: number;
+  accuracy: number;
+  achievedAt: string;
+}
+
 export class KeyboardHeroDB extends Dexie {
   sessions!: EntityTable<LocalSessionRecord, 'id'>;
   keyProgress!: EntityTable<UserKeyProgress, 'key'>;
   userSettings!: EntityTable<LocalSettingsRecord, 'id'>;
   syncQueue!: EntityTable<SyncQueueItem, 'id'>;
+  arcadeScores!: EntityTable<ArcadeScoreRecord, 'id'>;
 
   constructor() {
     super('KeyboardHeroDB');
@@ -37,10 +48,35 @@ export class KeyboardHeroDB extends Dexie {
       userSettings: 'id',
       syncQueue: 'id, createdAt, entityType',
     });
+
+    this.version(2).stores({
+      sessions: 'id, completedAt, stageId, syncStatus, createdAt',
+      keyProgress: 'key, confidence, lastPracticedAt',
+      userSettings: 'id',
+      syncQueue: 'id, createdAt, entityType',
+      arcadeScores: 'id, gameId, difficulty, achievedAt',
+    });
   }
 }
 
 export const db = new KeyboardHeroDB();
+
+/**
+ * Persists an arcade game high score to IndexedDB.
+ */
+export async function persistArcadeScore(score: ArcadeScoreRecord): Promise<void> {
+  await db.arcadeScores.put(score);
+}
+
+/**
+ * Loads recent arcade high scores.
+ */
+export async function loadArcadeScores(gameId?: 'redline' | 'defuse'): Promise<ArcadeScoreRecord[]> {
+  if (gameId) {
+    return await db.arcadeScores.where('gameId').equals(gameId).reverse().sortBy('score');
+  }
+  return await db.arcadeScores.orderBy('achievedAt').reverse().limit(20).toArray();
+}
 
 /**
  * Persists a completed typing session to IndexedDB and enqueues it for server sync.

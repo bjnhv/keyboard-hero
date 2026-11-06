@@ -135,9 +135,9 @@ graph TD
 
 ### Phase 9: Arcade Mode & Mini-Games Hub (`/arcade`)
 *Full game design document available in [`ARCADE.md`](./ARCADE.md).*
-- [ ] **Arcade Hub Navigation & Route (`/arcade`)**:
+- [x] **Arcade Hub Navigation & Route (`/arcade`)**:
   - Retro neon arcade hub with game selector cards, difficulty toggles, and high-score badges.
-- [ ] **Mini-Game 1: "Redline RPM" (Speedometer Sustain Challenge)**:
+- [x] **Mini-Game 1: "Redline RPM" (Speedometer Sustain Challenge)**:
   - Analog & digital SVG speedometer dial responding in real time to rolling WPM.
   - Redline threshold marker: player must keep speed in the red zone for $X$ consecutive seconds.
   - Turbo boost particles, engine downshift audio cues, and decay penalties if dropping below the line.
@@ -152,7 +152,7 @@ graph TD
   - [ ] *Rhythm DJ / Beat Match*: Guitar Hero style vertical note highway training cadence and dwell consistency.
   - [ ] *Terminal Hacker*: Cyber infiltration code-runner keeping security trace route below 100%.
   - [ ] *Ghost Drag Race*: 1/4-mile drag duel against your personal best ghost car.
-- [ ] **Arcade Storage & Audio**:
+- [x] **Arcade Storage & Audio**:
   - Dexie table `arcadeScores` tracking personal bests, stars, and medals per difficulty tier.
   - Web Audio procedural SFX (engine revs, countdown beeps, defusal zaps, detonation).
 

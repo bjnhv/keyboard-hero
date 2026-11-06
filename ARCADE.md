@@ -135,3 +135,4 @@ A suitcase bomb with a glowing digital countdown clock is armed in front of you.
 - Route `/arcade`: Arcade Hub selection menu with retro neon aesthetic and cards for each game mode.
 - Route `/arcade/redline`: Fullscreen vehicle dashboard with animated SVG speedometer.
 - Route `/arcade/defuse`: High-tension C4 briefcase interface with digital LED clock and wire mechanics.
+

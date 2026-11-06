@@ -12,6 +12,7 @@ import {
   Volume2,
   VolumeX,
   Flame,
+  Gamepad2,
 } from 'lucide-react';
 import { TypingCanvas } from '@/components/typing/typing-canvas';
 import { VirtualKeyboard } from '@/components/keyboard/virtual-keyboard';
@@ -96,6 +97,14 @@ export default function LearnPage() {
           >
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             <span className="hidden sm:inline">Heatmap</span>
+          </Link>
+          <span className="text-border">/</span>
+          <Link
+            href="/arcade"
+            className="inline-flex items-center gap-1.5 text-xs text-rose-400 hover:text-rose-300 transition font-bold"
+          >
+            <Gamepad2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Arcade</span>
           </Link>
         </div>
 
