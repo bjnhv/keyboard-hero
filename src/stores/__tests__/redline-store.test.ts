@@ -50,3 +50,4 @@ describe('Redline RPM Store', () => {
     expect(updated.totalErrors).toBe(1);
   });
 });
+

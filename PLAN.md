@@ -137,8 +137,13 @@ graph TD
 *Full game design document available in [`ARCADE.md`](./ARCADE.md).*
 - [x] **Arcade Hub Navigation & Route (`/arcade`)**:
   - Retro neon arcade hub with game selector cards, difficulty toggles, and high-score badges.
+- [ ] **Arcade Progression & Unlock Gating (Prerequisite Condition)**:
+  - Arcade Mode locked by default for new typists; unlocks only after meeting specific curriculum milestones to ensure foundational touch-typing mechanics before high-stress gamification.
+  - Locked UI state with visual padlock badge, unlock progress indicator, and explanatory modal on the Home page (`/`) and Arcade Hub (`/arcade`).
+  - *Unlock Condition (Criteria TBD)*: E.g., complete Stage 3 (Home Row mastery) or achieve minimum confidence across primary keys. Exact gating condition to be finalized.
 - [x] **Mini-Game 1: "Redline RPM" (Speedometer Sustain Challenge)**:
   - Analog & digital SVG speedometer dial responding in real time to rolling WPM.
+  - Realistic automotive instrument cluster with $270^\circ$ sweep (135° to 405°), mathematical needle-to-tick alignment, and MID HUD.
   - Redline threshold marker: player must keep speed in the red zone for $X$ consecutive seconds.
   - Turbo boost particles, engine downshift audio cues, and decay penalties if dropping below the line.
   - Tiers: Amateur (35 WPM / 10s), Sport (50 WPM / 15s), Supercar (75 WPM / 20s), Hypercar (100+ WPM / 25s).

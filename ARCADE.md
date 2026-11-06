@@ -136,3 +136,15 @@ A suitcase bomb with a glowing digital countdown clock is armed in front of you.
 - Route `/arcade/redline`: Fullscreen vehicle dashboard with animated SVG speedometer.
 - Route `/arcade/defuse`: High-tension C4 briefcase interface with digital LED clock and wire mechanics.
 
+---
+
+## 6. Progression & Unlock Gating (Prerequisite Requirements)
+To prevent new users from skipping foundational muscle memory development, Arcade Mode is designed with an unlock progression gate:
+- **Locked State**: For new users, Arcade Mode buttons and cards show a padlock icon with a progress badge (e.g. "Locked — Complete Curriculum Prerequisites to Unlock").
+- **Unlock Criteria (To Be Finalized)**:
+  - *Option A*: Complete Stage 3 (Home Row Mastery) with $\ge 70\%$ confidence on all home keys.
+  - *Option B*: Reach a specific overall Net WPM threshold (e.g., 25 WPM) in standard practice.
+  - *Option C*: Complete a minimum number of successful curriculum sessions (e.g., 5 qualifying sessions).
+  - *Status*: The exact unlock condition will be evaluated and decided prior to final rollout.
+
+
