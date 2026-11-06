@@ -29,24 +29,39 @@
 
   /* -------------------------------------------------------------------------
    * High-Resolution & 2K Responsive Root Font Scaling
-   * Automatically scales all rem-based typography, keys, buttons & containers
-   * proportionately on Full HD (1080p), 2K (1440p / QHD), and 4K displays.
+   * Automatically scales all rem-based typography proportionately on displays
+   * that have BOTH high width and sufficient vertical height.
+   * On Ultrawide screens (21:9, 32:9), keeps root font size constrained to
+   * prevent vertical overflow so all content fits on a single screen.
    * ------------------------------------------------------------------------- */
-  @media (min-width: 1920px) {
+  @media (min-width: 1920px) and (min-height: 1000px) and (max-aspect-ratio: 2/1) {
+    :root {
+      font-size: 16.5px;
+    }
+  }
+
+  @media (min-width: 2400px) and (min-height: 1300px) and (max-aspect-ratio: 2/1) {
     :root {
       font-size: 17.5px;
     }
   }
 
-  @media (min-width: 2400px) {
+  @media (min-width: 3200px) and (min-height: 1600px) and (max-aspect-ratio: 2/1) {
     :root {
-      font-size: 19.5px;
+      font-size: 18.5px;
     }
   }
 
-  @media (min-width: 3200px) {
+  /* Ultrawide screens (21:9, 32:9, 3440x1440, 2560x1080) & vertically constrained viewports */
+  @media (min-aspect-ratio: 19/10) {
     :root {
-      font-size: 22px;
+      font-size: 15px;
+    }
+  }
+
+  @media (max-height: 850px) {
+    :root {
+      font-size: 14.5px;
     }
   }
 }

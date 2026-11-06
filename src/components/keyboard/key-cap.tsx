@@ -37,7 +37,7 @@ export const KeyCap: React.FC<KeyCapProps> = ({
   return (
     <div
       style={flexStyle}
-      className={`h-11 sm:h-12 md:h-13 lg:h-14 3xl:h-16 2k:h-20 m-0.5 sm:m-1 3xl:m-1.5 rounded-lg border flex flex-col items-center justify-center relative select-none transition-all duration-75 text-xs sm:text-sm lg:text-base 3xl:text-lg 2k:text-xl font-medium ${dynamicClasses}`}
+      className={`h-9 sm:h-10 md:h-11 lg:h-12 xl:h-12.5 3xl:h-13 m-0.5 sm:m-0.5 lg:m-1 rounded-md sm:rounded-lg border flex flex-col items-center justify-center relative select-none transition-all duration-75 text-xs sm:text-sm lg:text-base 3xl:text-lg font-medium ${dynamicClasses}`}
     >
       <span>{keyDef.display}</span>
 

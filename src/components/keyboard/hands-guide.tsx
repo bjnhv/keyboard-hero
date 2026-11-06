@@ -30,12 +30,12 @@ export const HandsGuide: React.FC = () => {
   const activeFinger = expectedKeyDef?.finger ?? null;
 
   return (
-    <div className="flex flex-col items-center gap-2.5 w-full">
+    <div className="flex flex-col items-center gap-1.5 sm:gap-2 w-full shrink-0">
       {/* Visual Transparent Hands (toggleable) */}
       {showHandsGuide && <TransparentHands />}
 
       {/* Fingers Guidance Row */}
-      <div className="flex items-center justify-between max-w-2xl xl:max-w-3xl 3xl:max-w-4xl 2k:max-w-5xl w-full mx-auto px-4 py-2 3xl:px-6 3xl:py-3 bg-secondary/30 rounded-xl border border-border/50 text-xs sm:text-sm 3xl:text-base text-muted-foreground select-none">
+      <div className="flex items-center justify-between max-w-2xl xl:max-w-3xl 3xl:max-w-4xl 2k:max-w-5xl w-full mx-auto px-3 py-1 sm:px-4 sm:py-1.5 bg-secondary/30 rounded-lg sm:rounded-xl border border-border/50 text-xs sm:text-sm text-muted-foreground select-none">
         {/* Left Hand Indicator */}
         <div className="flex items-center gap-1.5 sm:gap-2 3xl:gap-3">
           <span className="font-semibold text-foreground/70 mr-1 hidden sm:inline">Left:</span>
@@ -46,20 +46,20 @@ export const HandsGuide: React.FC = () => {
             return (
               <div
                 key={finger.id}
-                className={`px-2 py-1 3xl:px-3 3xl:py-1.5 rounded-md 3xl:rounded-lg transition-all flex items-center gap-1 3xl:gap-1.5 border ${
+                className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md transition-all flex items-center gap-1 border ${
                   isActive
                     ? `${theme.bg} ${theme.border} ${theme.text} font-bold scale-105 shadow-sm`
                     : 'bg-card/40 border-border/30 opacity-60'
                 }`}
               >
-                <span className={`w-2 h-2 3xl:w-2.5 3xl:h-2.5 rounded-full ${theme.dot}`} />
-                <span className="text-[10px] sm:text-xs 3xl:text-sm">{finger.label}</span>
+                <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${theme.dot}`} />
+                <span className="text-[10px] sm:text-xs">{finger.label}</span>
               </div>
             );
           })}
         </div>
 
-        <div className="h-4 3xl:h-6 w-[1px] bg-border mx-2" />
+        <div className="h-3.5 sm:h-4 w-[1px] bg-border mx-1.5" />
 
         {/* Right Hand Indicator */}
         <div className="flex items-center gap-1.5 sm:gap-2 3xl:gap-3">
@@ -71,14 +71,14 @@ export const HandsGuide: React.FC = () => {
             return (
               <div
                 key={finger.id}
-                className={`px-2 py-1 3xl:px-3 3xl:py-1.5 rounded-md 3xl:rounded-lg transition-all flex items-center gap-1 3xl:gap-1.5 border ${
+                className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md transition-all flex items-center gap-1 border ${
                   isActive
                     ? `${theme.bg} ${theme.border} ${theme.text} font-bold scale-105 shadow-sm`
                     : 'bg-card/40 border-border/30 opacity-60'
                 }`}
               >
-                <span className={`w-2 h-2 3xl:w-2.5 3xl:h-2.5 rounded-full ${theme.dot}`} />
-                <span className="text-[10px] sm:text-xs 3xl:text-sm">{finger.label}</span>
+                <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${theme.dot}`} />
+                <span className="text-[10px] sm:text-xs">{finger.label}</span>
               </div>
             );
           })}

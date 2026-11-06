@@ -65,10 +65,10 @@ export const SpeedometerGauge: React.FC = () => {
   const ticks = Array.from({ length: 33 }, (_, i) => i * 5);
 
   return (
-    <div className="relative flex flex-col items-center justify-center p-2 sm:p-4 select-none">
+    <div className="relative flex flex-col items-center justify-center p-1 sm:p-2 select-none shrink-0">
       {/* Outer Chrome / Titanium Housing Bezel */}
       <div
-        className={`relative w-72 h-72 sm:w-88 sm:h-88 3xl:w-104 3xl:h-104 rounded-full p-2.5 border-[6px] transition-all duration-300 flex items-center justify-center shadow-2xl ${
+        className={`relative w-64 h-64 sm:w-76 sm:h-76 md:w-80 md:h-80 3xl:w-84 3xl:h-84 rounded-full p-2 border-[5px] sm:border-[6px] transition-all duration-300 flex items-center justify-center shadow-2xl ${
           isRedlining
             ? 'border-rose-500/80 shadow-[0_0_50px_rgba(244,63,94,0.35)] bg-gradient-to-b from-rose-950/40 via-[#0a0f1d] to-[#030712]'
             : 'border-slate-700/80 shadow-black/80 bg-gradient-to-b from-slate-900/60 via-[#0a0f1d] to-[#030712]'
@@ -308,7 +308,7 @@ export const SpeedometerGauge: React.FC = () => {
       </div>
 
       {/* Turbo Boost & Hold Reservoir Computer */}
-      <div className="w-full max-w-md sm:max-w-lg mt-5 p-4 rounded-2xl bg-secondary/30 border border-border/80 backdrop-blur-sm flex flex-col gap-2.5 shadow-xl">
+      <div className="w-full max-w-md mt-2.5 sm:mt-3 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-secondary/30 border border-border/80 backdrop-blur-sm flex flex-col gap-1.5 sm:gap-2 shadow-xl">
         <div className="flex items-center justify-between text-xs font-semibold">
           <span className="flex items-center gap-1.5 text-foreground">
             {isRedlining ? (

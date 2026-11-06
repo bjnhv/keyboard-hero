@@ -96,7 +96,7 @@ export default function RedlineGamePage() {
   return (
     <div
       onClick={() => inputRef.current?.focus()}
-      className="min-h-screen bg-background text-foreground flex flex-col justify-between p-4 sm:p-6 3xl:p-10 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full select-none cursor-text"
+      className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-background text-foreground flex flex-col justify-between px-4 sm:px-6 3xl:px-10 py-2 sm:py-3 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full select-none cursor-text"
     >
       {/* Hidden input to capture keystrokes */}
       <input
@@ -111,7 +111,7 @@ export default function RedlineGamePage() {
       />
 
       {/* Top Header */}
-      <header className="flex items-center justify-between border-b border-border/50 pb-4 mb-2">
+      <header className="flex items-center justify-between border-b border-border/50 pb-2 mb-1.5 sm:pb-2.5 sm:mb-2 shrink-0">
         <div className="flex items-center gap-3">
           <Link
             href="/arcade"
@@ -235,7 +235,7 @@ export default function RedlineGamePage() {
       </main>
 
       {/* Footer Instructions */}
-      <footer className="w-full text-center text-xs text-muted-foreground/60 pt-4 border-t border-border/30">
+      <footer className="w-full text-center text-[11px] sm:text-xs text-muted-foreground/60 pt-2 border-t border-border/30 shrink-0">
         Tip: Press <span className="font-mono text-foreground font-semibold">Tab</span> to reset
         the speedometer. Keep cadence steady through word spaces to avoid losing turbo boost.
       </footer>

@@ -79,9 +79,9 @@ export default function LearnPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between p-4 sm:p-6 3xl:p-10 2k:p-14 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full">
+    <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-background text-foreground flex flex-col justify-between px-4 sm:px-6 3xl:px-10 2k:px-14 py-2 sm:py-3 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full">
       {/* Top Navigation Bar */}
-      <header className="flex items-center justify-between w-full border-b border-border/50 pb-4 mb-4">
+      <header className="flex items-center justify-between w-full border-b border-border/50 pb-2 mb-1.5 sm:pb-2.5 sm:mb-2 shrink-0">
         <div className="flex items-center gap-2.5">
           <Link
             href="/"
@@ -188,7 +188,7 @@ export default function LearnPage() {
       {/* Stage Progression Notification Banner */}
       {stageNotification && (
         <div
-          className={`w-full mb-2 p-3 rounded-xl border flex items-center justify-between text-xs transition animate-in fade-in slide-in-from-top-2 ${
+          className={`w-full mb-1 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border flex items-center justify-between text-xs transition animate-in fade-in slide-in-from-top-2 shrink-0 ${
             stageNotification.type === 'advance'
               ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
               : 'bg-primary/10 border-primary/25 text-foreground'
@@ -216,23 +216,23 @@ export default function LearnPage() {
       )}
 
       {/* Main Practice Flow */}
-      <main className="flex-1 flex flex-col justify-center gap-6 my-auto">
+      <main className="flex-1 flex flex-col justify-center gap-2 sm:gap-3 lg:gap-3.5 my-auto min-h-0">
         <TypingCanvas />
 
         {!hardcoreMode ? (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1.5 sm:gap-2 shrink-0">
             <HandsGuide />
             <VirtualKeyboard />
           </div>
         ) : (
-          <div className="p-4 rounded-xl bg-secondary/30 border border-border/50 text-center max-w-md mx-auto text-xs text-muted-foreground">
+          <div className="p-3 sm:p-4 rounded-xl bg-secondary/30 border border-border/50 text-center max-w-md mx-auto text-xs text-muted-foreground shrink-0">
             ⚡ <span className="text-primary font-semibold">Hardcore Mode</span> is active. Keyboard is hidden to enforce pure blind touch-typing muscle memory.
           </div>
         )}
       </main>
 
       {/* Footer Info */}
-      <footer className="w-full text-center text-xs text-muted-foreground/60 pt-4 border-t border-border/30">
+      <footer className="w-full text-center text-[11px] sm:text-xs text-muted-foreground/60 pt-1.5 sm:pt-2 border-t border-border/30 shrink-0">
         Tip: Keep your index fingers on <span className="font-mono text-primary font-bold">F</span> and <span className="font-mono text-primary font-bold">J</span> tactile bumps. Press <span className="font-mono text-foreground font-semibold">Tab</span> anytime to restart.
       </footer>
 

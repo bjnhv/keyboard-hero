@@ -12,7 +12,7 @@ export const VirtualKeyboard: React.FC = () => {
   const activeKeysSet = React.useMemo(() => new Set(activeKeys.map((k) => k.toLowerCase())), [activeKeys]);
 
   return (
-    <div className="w-full max-w-4xl xl:max-w-5xl 3xl:max-w-6xl 2k:max-w-7xl p-2 sm:p-4 3xl:p-6 rounded-2xl 3xl:rounded-3xl bg-card border border-border shadow-2xl flex flex-col gap-1 3xl:gap-1.5 mx-auto">
+    <div className="w-full max-w-4xl xl:max-w-5xl 3xl:max-w-6xl 2k:max-w-7xl p-1.5 sm:p-2.5 3xl:p-3 rounded-xl sm:rounded-2xl bg-card border border-border shadow-2xl flex flex-col gap-0.5 sm:gap-1 mx-auto shrink-0">
       {QWERTY_LAYOUT.rows.map((row, rowIndex) => (
         <div key={rowIndex} className="flex w-full justify-center">
           {row.map((keyDef) => {

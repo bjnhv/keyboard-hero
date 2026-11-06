@@ -128,7 +128,7 @@ const HandSvg: React.FC<HandSvgProps> = ({ hand, activeFinger, fingers }) => {
     <div className="relative flex flex-col items-center">
       <svg
         viewBox="0 0 200 230"
-        className="w-32 h-36 sm:w-44 sm:h-48 md:w-52 md:h-56 3xl:w-64 3xl:h-70 2k:w-76 2k:h-84 select-none transition-all duration-200"
+        className="w-24 h-28 sm:w-32 sm:h-36 md:w-38 md:h-42 lg:w-44 lg:h-48 3xl:w-48 3xl:h-52 select-none transition-all duration-200"
       >
         <defs>
           {/* Subtle drop shadow filters for active glowing fingers */}
