@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import {
   Trophy,
   RotateCcw,
@@ -208,10 +209,17 @@ export const SessionSummaryModal: React.FC = () => {
           </button>
         </div>
 
-        {/* Manual Skip Tip */}
-        <p className="text-[11px] text-muted-foreground/60 mt-3">
-          Tip: You can manually switch to any stage anytime from the dropdown at the top.
-        </p>
+        {/* Manual Skip Tip & Heatmap Link */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 w-full mt-3 text-[11px] text-muted-foreground/70">
+          <span>Tip: You can manually switch stages from the dropdown.</span>
+          <Link
+            href="/stats"
+            className="text-primary hover:underline flex items-center gap-1 font-semibold"
+          >
+            <Sparkles className="w-3 h-3 text-primary" />
+            <span>View Heatmap</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

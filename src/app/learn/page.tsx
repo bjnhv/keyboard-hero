@@ -81,13 +81,23 @@ export default function LearnPage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between p-4 sm:p-6 max-w-5xl mx-auto w-full">
       {/* Top Navigation Bar */}
       <header className="flex items-center justify-between w-full border-b border-border/50 pb-4 mb-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Home</span>
-        </Link>
+        <div className="flex items-center gap-2.5">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Home</span>
+          </Link>
+          <span className="text-border">/</span>
+          <Link
+            href="/stats"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition font-medium"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span className="hidden sm:inline">Heatmap</span>
+          </Link>
+        </div>
 
         {/* Toolbar Controls */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">

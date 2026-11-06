@@ -117,13 +117,15 @@ graph TD
   - Client-side `ClientSyncManager` with `navigator.onLine` auto-reconnect and periodic sync flushes.
 
 ### Phase 8: UI Dashboard, Analytics & Responsive Polish
-- [ ] **Typing Canvas UI**: Smooth caret animation, active line rendering, mistake coloration.
-- [ ] **Analytics Dashboard**:
-  - Keyboard Heatmap: Color keys by error rate / speed (Green -> Yellow -> Red).
-  - Progress line charts: WPM & Accuracy over time.
-- [ ] **Mobile Responsiveness**:
-  - Responsive scaling for tablet/mobile screens.
-  - Detection for external physical/Bluetooth keyboard on mobile with fallback theory/review screen.
+- [x] **Typing Canvas UI**: Smooth caret animation, active line rendering, mistake coloration, and progress scorecard.
+- [x] **Analytics Dashboard (`/stats`)**:
+  - [x] Keyboard Heatmap: Color keys by confidence score, accuracy %, and dwell speed (Green -> Yellow -> Red).
+  - [x] Interactive per-key inspection drawer with lifetime hits, errors, rolling WPM, and dwell time.
+  - [x] Lifetime practice metrics (Peak WPM, Average WPM, Average Accuracy, Total Keystrokes).
+  - [x] Offline practice history table loaded directly from Dexie.js (`db.sessions`).
+- [ ] **Mobile Responsiveness & PWA**:
+  - [ ] Responsive scaling for tablet/mobile screens.
+  - [ ] Detection for external physical/Bluetooth keyboard on mobile with fallback theory/review screen.
 
 ---
 
