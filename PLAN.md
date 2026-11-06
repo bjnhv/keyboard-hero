@@ -52,11 +52,20 @@ graph TD
 - [x] **Unit Tests**: Full test suite covering edge cases (fast typing, multiple backspaces, paste prevention).
 
 ### Phase 3: Adaptive Learning Algorithm (Keybr-style)
-- [x] **Key Progression Ladder**:
-  - Stage 1: Home row anchors (`f`, `j`, `d`, `k`, `s`, `l`, `a`, `;`).
-  - Stage 2: Center/Reach keys (`g`, `h`, `r`, `u`, `e`, `i`, `t`, `y`).
-  - Stage 3: Top row & Bottom row keys (`q`, `w`, `o`, `p`, `z`, `x`, `c`, `v`, `b`, `n`, `m`).
-  - Stage 4: Capitals & Punctuation (`Shift`, commas, periods, quotes).
+- [x] **Key Progression Ladder (Initial 7 Stages)**:
+  - Stage 1: Home row anchors (`f`, `j`, `d`, `k`).
+  - Stage 2: Full home row (`s`, `l`, `a`, `;`).
+  - Stage 3: Top row vowels & index reaches (`e`, `i`, `r`, `u`).
+  - Stage 4: Center reaches & high frequency (`g`, `h`, `t`, `y`).
+  - Stage 5: Top row extremes & bottom row (`o`, `p`, `w`, `q`, `n`, `m`, `c`, `v`).
+  - Stage 6: Remaining rare letters (`b`, `x`, `z`).
+  - Stage 7: Basic punctuation (`,`, `.`, `'`, `?`).
+- [ ] **Curriculum Expansion (Advanced & Code Stages)**:
+  - [ ] Stage 8: Number Row (`1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `0`).
+  - [ ] Stage 9: Shift Symbols & Enclosing Brackets (`!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `(`, `)`, `[`, `]`, `{`, `}`).
+  - [ ] Stage 10: Programming Operators (`=`, `+`, `-`, `_`, `/`, `\`, `|`, `<`, `>`, `:`, `~`, `` ` ``).
+  - [ ] Stage 11: Mixed Capitalization & Casing Drills (CamelCase, snake_case, PascalCase).
+  - [ ] Stage 12: Full Code Syntax Drills (JavaScript, TypeScript, Python, HTML/CSS snippet typing).
 - [x] **Confidence Score Engine**:
   - Calculate per-key score: $Confidence = f(\text{Accuracy}, \text{Speed}, \text{Error Frequency})$.
   - Track individual key dwell times and error rates.
@@ -72,8 +81,12 @@ graph TD
   - Responsive SVG / CSS Grid keyboard.
   - Active target key highlight + finger color indicator.
   - Dynamic keypress animations (reflecting real-time physical keydown).
-- [x] **Hands & Finger Guide Component**:
-  - Visual hand representation indicating which finger (e.g., Left Index, Right Ring) should strike the next key.
+- [x] **Hands & Finger Guide Component (Fingers Row)**:
+  - 10-finger color-coded pill indicators (Pinky, Ring, Middle, Index, Thumbs) highlighting the active finger.
+- [ ] **Transparent Hands Visual Overlay**:
+  - [ ] Semi-transparent SVG hand silhouettes (Left & Right hands) visually positioned with finger bones/joints.
+  - [ ] Active finger dynamically lights up / pulses in its assigned color (rose, orange, amber, emerald, blue) to teach physical posture.
+  - [ ] Dedicated Toolbar Toggle Button: On/Off switch with icon in the header controls to toggle the hands overlay on/off based on user preference.
 - [x] **"Hardcore Mode"**:
   - Toggle to hide the visual keyboard or mask upcoming characters to force physical muscle memory.
 
@@ -84,12 +97,15 @@ graph TD
   - Distinct subtle audio cue on mistake / invalid character.
 
 ### Phase 6: Local-First Storage (Dexie.js)
-- [ ] **IndexedDB Schema**:
+- [x] **IndexedDB Schema**:
   - `sessions`: Completed typing sessions with detailed metrics and raw key logs.
-  - `keyProgress`: Aggregated stats per key (confidence, accuracy, attempts).
+  - `keyProgress`: Aggregated stats per key (confidence, accuracy, attempts, rolling WPM).
   - `syncQueue`: Offline mutations awaiting server sync.
-  - `userSettings`: Local preferences (theme, audio, layout, target WPM).
-- [ ] **Reactive Hooks**: Connect Dexie tables to UI via `useLiveQuery` for zero-lag reactivity.
+  - `userSettings`: Local preferences (theme, audio, layout, target WPM, activeStageId).
+- [x] **Reactive Storage & Hydration**:
+  - Automatically persist completed practice sessions and key confidence to IndexedDB.
+  - Hydrate active curriculum stage, letter confidence, and audio preferences on page reload.
+  - Reset progress cleanly wipes local database tables.
 
 ### Phase 7: Backend Synchronization & PostgreSQL (Drizzle ORM)
 - [ ] **Drizzle Schema Definition**:

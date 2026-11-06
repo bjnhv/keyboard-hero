@@ -21,11 +21,12 @@ export default function LearnPage() {
   const completedMetrics = useTypingStore((s) => s.completedMetrics);
   const nextLesson = useTypingStore((s) => s.nextLesson);
   const restartLesson = useTypingStore((s) => s.restartLesson);
+  const loadFromLocalDb = useTypingStore((s) => s.loadFromLocalDb);
 
   useEffect(() => {
     setIsMounted(true);
-    initPractice();
-  }, [initPractice]);
+    loadFromLocalDb();
+  }, [loadFromLocalDb]);
 
   // Handle global shortcuts on modal (Enter -> next lesson, Tab+Enter -> retry)
   useEffect(() => {

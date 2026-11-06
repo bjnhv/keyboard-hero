@@ -12,6 +12,15 @@ import {
 } from '@/core/curriculum';
 import { findKeyDefinition, QWERTY_LAYOUT } from '@/core/layouts';
 import { audioSynth } from '@/core/audio/mechanical-synth';
+import { LocalSessionRecord } from '@/types/sync';
+import {
+  persistSession,
+  persistKeyProgress,
+  persistSettings,
+  loadSettings,
+  loadKeyProgressMap,
+  clearLocalProgress,
+} from '@/local-db';
 
 interface TypingStoreState {
   engine: TypingEngine;
@@ -25,8 +34,10 @@ interface TypingStoreState {
   soundEnabled: boolean;
   hardcoreMode: boolean;
   expectedKeyDef: KeyDefinition | null;
+  isLoadedFromDb: boolean;
 
   // Actions
+  loadFromLocalDb: () => Promise<void>;
   initPractice: (stageId?: number) => void;
   handleKeyDown: (key: string, code: string) => void;
   handleKeyUp: (code: string) => void;
@@ -68,6 +79,47 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
     soundEnabled: true,
     hardcoreMode: false,
     expectedKeyDef,
+    isLoadedFromDb: false,
+
+    loadFromLocalDb: async () => {
+      if (typeof window === 'undefined' || get().isLoadedFromDb) return;
+      try {
+        const settings = await loadSettings();
+        const progressMap = await loadKeyProgressMap();
+
+        const stage = settings.activeStageId || 1;
+        const keys = getUnlockedKeysUpToStage(stage);
+        const focus = getWeakestKey(keys, progressMap) ?? keys[0] ?? 'f';
+
+        const lesson = generateAdaptiveLesson({
+          stageId: stage,
+          activeKeys: keys,
+          targetFocusKey: focus,
+          wordCount: 18,
+          mode: 'adaptive',
+        });
+
+        const { engine } = get();
+        engine.loadText(lesson.text);
+        const state = engine.getState();
+        const expectedChar = state.targetText[0] ?? ' ';
+
+        set({
+          isLoadedFromDb: true,
+          activeStageId: stage,
+          activeKeys: keys,
+          targetFocusKey: focus,
+          keyProgress: progressMap,
+          soundEnabled: settings.soundEnabled,
+          hardcoreMode: settings.hardcoreMode,
+          activeState: state,
+          expectedKeyDef: findKeyDefinition(expectedChar, QWERTY_LAYOUT) ?? null,
+        });
+      } catch (err) {
+        console.error('Failed to load local DB state:', err);
+        set({ isLoadedFromDb: true });
+      }
+    },
 
     initPractice: (stageId?: number) => {
       const stage = stageId ?? get().activeStageId;
@@ -131,6 +183,25 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
           );
         }
 
+        // Persist session and key progress in background to IndexedDB
+        if (typeof window !== 'undefined') {
+          const sessionRecord: LocalSessionRecord = {
+            id: `session-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+            stageId: get().activeStageId,
+            metrics,
+            completedAt: new Date().toISOString(),
+            syncStatus: 'pending',
+            syncRetries: 0,
+            createdAt: Date.now(),
+          };
+          persistSession(sessionRecord).catch((err) =>
+            console.error('Failed to persist session to IndexedDB:', err)
+          );
+          persistKeyProgress(Object.values(updatedProgress)).catch((err) =>
+            console.error('Failed to persist key progress to IndexedDB:', err)
+          );
+        }
+
         set({
           activeState: newState,
           completedMetrics: metrics,
@@ -182,24 +253,44 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
         }
       }
 
+      if (typeof window !== 'undefined') {
+        persistSettings({ activeStageId: nextStageId }).catch(() => {});
+      }
+
       get().initPractice(nextStageId);
     },
 
     setStage: (stageId: number) => {
+      if (typeof window !== 'undefined') {
+        persistSettings({ activeStageId: stageId }).catch(() => {});
+      }
       get().initPractice(stageId);
     },
 
     toggleSound: () => {
       const next = !get().soundEnabled;
       audioSynth.setEnabled(next);
+      if (typeof window !== 'undefined') {
+        persistSettings({ soundEnabled: next }).catch(() => {});
+      }
       set({ soundEnabled: next });
     },
 
     toggleHardcoreMode: () => {
+      const next = !get().hardcoreMode;
+      if (typeof window !== 'undefined') {
+        persistSettings({ hardcoreMode: next }).catch(() => {});
+      }
       set((s) => ({ hardcoreMode: !s.hardcoreMode }));
     },
 
     resetProgress: () => {
+      if (typeof window !== 'undefined') {
+        clearLocalProgress().catch((err) =>
+          console.error('Failed to clear local DB:', err)
+        );
+      }
+
       const stage = 1;
       const keys = getUnlockedKeysUpToStage(stage);
       const focus = keys[0] ?? 'f';
