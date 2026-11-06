@@ -68,17 +68,17 @@ graph TD
 - [x] **Layout System**:
   - Multi-layout support (QWERTY, Colemak, Dvorak).
   - Define keyboard matrix with key dimensions and finger assignments.
-- [ ] **Interactive Visual Keyboard Component**:
+- [x] **Interactive Visual Keyboard Component**:
   - Responsive SVG / CSS Grid keyboard.
   - Active target key highlight + finger color indicator.
   - Dynamic keypress animations (reflecting real-time physical keydown).
-- [ ] **Hands & Finger Guide Component**:
+- [x] **Hands & Finger Guide Component**:
   - Visual hand representation indicating which finger (e.g., Left Index, Right Ring) should strike the next key.
-- [ ] **"Hardcore Mode"**:
+- [x] **"Hardcore Mode"**:
   - Toggle to hide the visual keyboard or mask upcoming characters to force physical muscle memory.
 
 ### Phase 5: Audio Feedback System
-- [ ] **Web Audio API Engine**:
+- [x] **Web Audio API Engine**:
   - Synthesize low-latency click sounds or load audio buffers for mechanical switches (Cherry MX Blue, Brown, Red, and Typewriter).
   - Sub-5ms sound trigger on keydown.
   - Distinct subtle audio cue on mistake / invalid character.
