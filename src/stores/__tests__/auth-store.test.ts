@@ -80,6 +80,26 @@ describe('Auth Store', () => {
     expect(useAuthStore.getState().error).toBe('Invalid credentials');
   });
 
+  it('initiates Google sign in and requests social endpoint', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        url: 'https://ep-dry-dream-b9mjiwyf.neonauth.c-7.eu-central-1.aws.neon.tech/neondb/auth/sign-in/social/init?token=test',
+        redirect: true,
+      }),
+    } as unknown as Response);
+
+    const store = useAuthStore.getState();
+    await store.signInWithGoogle();
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/api/auth/sign-in/social',
+      expect.objectContaining({
+        method: 'POST',
+      })
+    );
+  });
+
   it('signs out and purges user state and storage', async () => {
     useAuthStore.setState({
       user: { id: 'u1', email: 'test@example.com', name: 'Test' },

@@ -25,6 +25,7 @@ interface AuthState {
   initAuth: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signUp: (email: string, password: string, name?: string) => Promise<{ success: boolean; error?: string }>;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -61,7 +62,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     if (typeof window !== 'undefined') {
       try {
-        cachedToken = localStorage.getItem(STORAGE_KEY_TOKEN);
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryToken = urlParams.get('token') || urlParams.get('session_token');
+        if (queryToken) {
+          localStorage.setItem(STORAGE_KEY_TOKEN, queryToken);
+          cachedToken = queryToken;
+          // Strip auth query parameters without reloading
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+        } else {
+          cachedToken = localStorage.getItem(STORAGE_KEY_TOKEN);
+        }
+
         const storedUser = localStorage.getItem(STORAGE_KEY_USER);
         if (storedUser) cachedUser = JSON.parse(storedUser);
       } catch {}
@@ -211,6 +223,39 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const msg = err instanceof Error ? err.message : 'Network error during registration';
       set({ isLoading: false, error: msg });
       return { success: false, error: msg };
+    }
+  },
+
+  signInWithGoogle: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const callbackURL =
+        typeof window !== 'undefined'
+          ? window.location.href.split('?')[0]
+          : 'http://localhost:3000';
+
+      const res = await fetch('/api/auth/sign-in/social', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: 'google',
+          callbackURL,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        const errorMsg = data.message || data.error || 'Failed to initialize Google login';
+        set({ isLoading: false, error: errorMsg });
+        return;
+      }
+
+      if (typeof window !== 'undefined') {
+        window.location.href = data.url;
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Google sign-in error';
+      set({ isLoading: false, error: msg });
     }
   },
 
