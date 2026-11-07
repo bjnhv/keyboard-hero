@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ArrowLeft, Keyboard, Sparkles, Gamepad2, LucideIcon } from 'lucide-react';
+import { AccountButton } from '@/components/auth';
 
 export interface AppBarProps {
   children?: React.ReactNode;
@@ -120,12 +121,11 @@ export const AppBar: React.FC<AppBarProps> = ({
         )}
       </div>
 
-      {/* Right Toolbar / Actions */}
-      {children && (
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0">
-          {children}
-        </div>
-      )}
+      {/* Right Toolbar / Actions & Account Controls */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0 ml-auto">
+        {children}
+        <AccountButton />
+      </div>
     </header>
   );
 };
