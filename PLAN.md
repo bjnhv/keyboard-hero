@@ -32,7 +32,7 @@ graph TD
 
 ### Phase 1: Foundation & Project Scaffolding
 - [x] Initialize Next.js 15 project with TypeScript, Tailwind CSS, and `src/` directory layout.
-- [ ] Configure `@serwist/next` (PWA) and Service Worker for full offline capabilities.
+- [x] Configure Web App Manifest, Service Worker, and PWA capabilities for offline standalone execution.
 - [x] Install and configure core packages:
   - `zustand` (performance-focused state management).
   - `dexie` & `dexie-react-hooks` (local client database).
@@ -129,9 +129,11 @@ graph TD
   - [x] Enlarged keycaps, hand silhouettes, and expanded layout containers (`max-w-[1700px]`).
   - [x] Dedicated UI Text Size toggle button (`1x` standard, `1.25x` large, `1.5x` huge) persisted in IndexedDB.
   - [x] Centralized design tokens in `src/styles/theme.ts`.
-- [ ] **Mobile Responsiveness & PWA**:
-  - [ ] Responsive scaling for tablet/mobile screens.
-  - [ ] Detection for external physical/Bluetooth keyboard on mobile with fallback theory/review screen.
+- [x] **Installable PWA & Offline App Shell**:
+  - [x] Web App Manifest (`manifest.json` / `app/manifest.ts`) with modern app icons, standalone display mode, and dark cyber theme colors.
+  - [x] Service Worker (`public/sw.js`) for full offline caching of app shell, scripts, CSS, and mechanical switch audio assets.
+  - [x] In-app PWA install prompt button (`<InstallAppButton />`) dynamically available in the top toolbar.
+  *(Note: Physical desktop/laptop keyboard is required; mobile virtual keyboard typing is explicitly excluded).*
 
 ### Phase 9: Arcade Mode & Mini-Games Hub (`/arcade`)
 *Full game design document available in [`ARCADE.md`](./ARCADE.md).*

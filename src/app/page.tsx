@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { Keyboard, Zap, WifiOff, Trophy, Sparkles, Gamepad2 } from "lucide-react";
 import { AccountButton } from "@/components/auth";
+import { InstallAppButton } from "@/components/pwa";
 
 export default function HomePage() {
   return (
     <main className="relative flex-1 min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden flex flex-col items-center justify-center px-4 sm:px-8 py-4 sm:py-6 text-center max-w-4xl 3xl:max-w-5xl mx-auto my-auto">
-      {/* Top Right Account Controls */}
-      <div className="absolute top-3 right-4 sm:top-5 sm:right-8 z-20">
+      {/* Top Right Account & Install Controls */}
+      <div className="absolute top-3 right-4 sm:top-5 sm:right-8 z-20 flex items-center gap-2">
+        <InstallAppButton />
         <AccountButton />
       </div>
 
