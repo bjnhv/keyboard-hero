@@ -13,7 +13,7 @@ async function handleAuthProxy(request: NextRequest, pathParams: { path: string[
   const targetUrl = `${NEON_AUTH_BASE_URL}/${subpath}${request.nextUrl.search}`;
 
   const forwardHeaders = new Headers();
-  
+
   // Forward Content-Type and Authorization if present
   const contentType = request.headers.get('content-type');
   if (contentType) forwardHeaders.set('content-type', contentType);
@@ -21,9 +21,20 @@ async function handleAuthProxy(request: NextRequest, pathParams: { path: string[
   const authHeader = request.headers.get('authorization');
   if (authHeader) forwardHeaders.set('authorization', authHeader);
 
-  // Forward incoming cookies (session token)
-  const cookieHeader = request.headers.get('cookie');
-  if (cookieHeader) forwardHeaders.set('cookie', cookieHeader);
+  // Forward incoming cookies (session token, challenge cookies)
+  const incomingCookieHeader = request.headers.get('cookie');
+  if (incomingCookieHeader) {
+    // If incoming cookies have neon-auth.*, also supply __Secure-neon-auth.* so Neon Auth recognizes it
+    const parts = incomingCookieHeader.split(';').map((p) => p.trim());
+    const upstreamCookies: string[] = [];
+    for (const part of parts) {
+      upstreamCookies.push(part);
+      if (part.startsWith('neon-auth.')) {
+        upstreamCookies.push(`__Secure-${part}`);
+      }
+    }
+    forwardHeaders.set('cookie', upstreamCookies.join('; '));
+  }
 
   // Inject allowed origin for Neon Auth backend acceptance
   forwardHeaders.set('origin', 'http://localhost:3000');
@@ -53,11 +64,25 @@ async function handleAuthProxy(request: NextRequest, pathParams: { path: string[
       response.headers.set('content-type', resContentType);
     }
 
-    // Forward Set-Cookie headers from Neon Auth to browser client
-    const rawSetCookie = upstreamResponse.headers.get('set-cookie');
-    if (rawSetCookie) {
-      // Clean up Partitioned or SameSite if needed for standard origin hosting
-      response.headers.set('set-cookie', rawSetCookie);
+    // Forward ALL Set-Cookie headers from Neon Auth to browser client
+    const isHttps = request.nextUrl.protocol === 'https:';
+    const rawSetCookies =
+      typeof upstreamResponse.headers.getSetCookie === 'function'
+        ? upstreamResponse.headers.getSetCookie()
+        : [upstreamResponse.headers.get('set-cookie')].filter(Boolean) as string[];
+
+    for (const cookieStr of rawSetCookies) {
+      if (!isHttps) {
+        // Over plain HTTP (e.g. localhost), browsers strictly reject __Secure- prefix and SameSite=None without Secure
+        const localhostCookie = cookieStr
+          .replace(/__Secure-/g, '')
+          .replace(/;\s*Secure/gi, '')
+          .replace(/;\s*SameSite=None/gi, '; SameSite=Lax')
+          .replace(/;\s*Partitioned/gi, '');
+        response.headers.append('set-cookie', localhostCookie);
+      } else {
+        response.headers.append('set-cookie', cookieStr);
+      }
     }
 
     return response;

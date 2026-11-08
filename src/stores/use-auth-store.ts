@@ -32,6 +32,9 @@ interface AuthState {
 const STORAGE_KEY_TOKEN = 'keyboard_hero_auth_token';
 const STORAGE_KEY_USER = 'keyboard_hero_auth_user';
 
+let authInitPromise: Promise<void> | null = null;
+let lastConsumedVerifier: string | null = null;
+
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   sessionToken: null,
@@ -55,79 +58,144 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   clearError: () => set({ error: null }),
 
   initAuth: async () => {
-    set({ isLoading: true });
-
-    let cachedToken: string | null = null;
-    let cachedUser: AuthUser | null = null;
-
-    if (typeof window !== 'undefined') {
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const queryToken = urlParams.get('token') || urlParams.get('session_token');
-        if (queryToken) {
-          localStorage.setItem(STORAGE_KEY_TOKEN, queryToken);
-          cachedToken = queryToken;
-          // Strip auth query parameters without reloading
-          const cleanUrl = window.location.pathname;
-          window.history.replaceState({}, document.title, cleanUrl);
-        } else {
-          cachedToken = localStorage.getItem(STORAGE_KEY_TOKEN);
-        }
-
-        const storedUser = localStorage.getItem(STORAGE_KEY_USER);
-        if (storedUser) cachedUser = JSON.parse(storedUser);
-      } catch {}
+    // Deduplicate concurrent calls (e.g. React StrictMode mounting twice)
+    if (authInitPromise) {
+      return authInitPromise;
     }
 
-    try {
-      const headers: Record<string, string> = {};
-      if (cachedToken) {
-        headers['Authorization'] = `Bearer ${cachedToken}`;
-      }
+    authInitPromise = (async () => {
+      set({ isLoading: true });
 
-      const res = await fetch('/api/auth/get-session', {
-        headers,
-      });
+      let cachedToken: string | null = null;
+      let cachedUser: AuthUser | null = null;
+      let verifierToExchange: string | null = null;
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.user) {
-          const user: AuthUser = {
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.name || data.user.email.split('@')[0],
-            createdAt: data.user.createdAt,
-          };
+      if (typeof window !== 'undefined') {
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const queryToken = urlParams.get('token') || urlParams.get('session_token');
+          const errorParam = urlParams.get('error');
+          const verifier = urlParams.get('neon_auth_session_verifier');
 
-          if (typeof window !== 'undefined') {
-            localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
+          // 1. One-time verifier handling
+          if (verifier && verifier !== lastConsumedVerifier) {
+            lastConsumedVerifier = verifier;
+            verifierToExchange = verifier;
+            // Immediately strip from URL so it is never re-submitted
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
           }
 
-          set({
-            user,
-            sessionToken: cachedToken,
-            isLoading: false,
-            error: null,
-          });
-          return;
-        }
+          // 2. Error handling from OAuth
+          if (errorParam) {
+            let errorMsg = 'Authentication error occurred.';
+            if (errorParam === 'account_not_linked') {
+              errorMsg =
+                'This email already exists via Email/Password. Please sign in with your password, or reset/link your account.';
+            } else {
+              errorMsg = `Login failed: ${errorParam.replace(/_/g, ' ')}`;
+            }
+            set({
+              error: errorMsg,
+              isAuthModalOpen: true,
+              authModalTab: 'signin',
+              isLoading: false,
+            });
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+            return;
+          }
+
+          // 3. Token handling
+          if (queryToken) {
+            localStorage.setItem(STORAGE_KEY_TOKEN, queryToken);
+            cachedToken = queryToken;
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+          } else {
+            cachedToken = localStorage.getItem(STORAGE_KEY_TOKEN);
+          }
+
+          const storedUser = localStorage.getItem(STORAGE_KEY_USER);
+          if (storedUser) {
+            cachedUser = JSON.parse(storedUser);
+            // Eagerly set user so UI renders immediately without waiting for network
+            set({
+              user: cachedUser,
+              sessionToken: cachedToken,
+              isLoading: true,
+            });
+          }
+        } catch {}
       }
 
-      // If remote session check returned null or expired
-      if (cachedUser) {
-        // Fallback to cached profile if present but unconfirmed
-        set({ user: cachedUser, sessionToken: cachedToken, isLoading: false });
-      } else {
-        set({ user: null, sessionToken: null, isLoading: false });
+      try {
+        const headers: Record<string, string> = {};
+        if (cachedToken) {
+          headers['Authorization'] = `Bearer ${cachedToken}`;
+        }
+
+        const getSessionUrl = verifierToExchange
+          ? `/api/auth/get-session?neon_auth_session_verifier=${encodeURIComponent(verifierToExchange)}`
+          : '/api/auth/get-session';
+
+        let res = await fetch(getSessionUrl, {
+          headers,
+        });
+
+        // If a verifier exchange failed with 400 (e.g. already redeemed in a parallel request),
+        // fallback to standard get-session to check if the session cookie is already set
+        if (!res.ok && verifierToExchange) {
+          res = await fetch('/api/auth/get-session', { headers });
+        }
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.user) {
+            const user: AuthUser = {
+              id: data.user.id,
+              email: data.user.email,
+              name: data.user.name || data.user.email.split('@')[0],
+              createdAt: data.user.createdAt,
+            };
+
+            const sessionToken = data.token || data.session?.token || cachedToken;
+
+            if (typeof window !== 'undefined') {
+              if (sessionToken) localStorage.setItem(STORAGE_KEY_TOKEN, sessionToken);
+              localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
+            }
+
+            set({
+              user,
+              sessionToken,
+              isLoading: false,
+              error: null,
+            });
+            return;
+          }
+        }
+
+        // If remote session check returned null or expired
+        if (cachedUser) {
+          // Keep cached profile if offline
+          set({ user: cachedUser, sessionToken: cachedToken, isLoading: false });
+        } else {
+          set({ user: null, sessionToken: null, isLoading: false });
+        }
+      } catch {
+        // Offline fallback: keep cached user if available
+        set({
+          user: cachedUser,
+          sessionToken: cachedToken,
+          isLoading: false,
+        });
+      } finally {
+        authInitPromise = null;
       }
-    } catch {
-      // Offline fallback: keep cached user if available
-      set({
-        user: cachedUser,
-        sessionToken: cachedToken,
-        isLoading: false,
-      });
-    }
+    })();
+
+    return authInitPromise;
   },
 
   signIn: async (email, password) => {

@@ -100,6 +100,33 @@ describe('Auth Store', () => {
     );
   });
 
+  it('handles account_not_linked query error on initialization', async () => {
+    const originalWindow = (globalThis as unknown as { window?: unknown }).window;
+    (globalThis as unknown as { window: unknown }).window = {
+      location: new URL('https://keyboard-hero-app.vercel.app/learn?error=account_not_linked'),
+      history: { replaceState: vi.fn() },
+      document: { title: 'Test' },
+      localStorage: {
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+      },
+    };
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+    } as unknown as Response);
+
+    const store = useAuthStore.getState();
+    await store.initAuth();
+
+    const updated = useAuthStore.getState();
+    expect(updated.isAuthModalOpen).toBe(true);
+    expect(updated.error).toContain('already exists via Email/Password');
+
+    (globalThis as unknown as { window: unknown }).window = originalWindow;
+  });
+
   it('signs out and purges user state and storage', async () => {
     useAuthStore.setState({
       user: { id: 'u1', email: 'test@example.com', name: 'Test' },

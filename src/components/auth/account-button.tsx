@@ -7,12 +7,14 @@ import { LogIn, LogOut, User, Check, ChevronDown } from 'lucide-react';
 
 export const AccountButton: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
   const { user, isLoading, openAuthModal, signOut, initAuth } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loggedOutNotice, setLoggedOutNotice] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Initialize session on client mount
   useEffect(() => {
+    setMounted(true);
     initAuth();
   }, [initAuth]);
 
@@ -36,14 +38,16 @@ export const AccountButton: React.FC<{ compact?: boolean }> = ({ compact = false
 
   return (
     <>
-      <div className="relative inline-flex items-center" ref={menuRef}>
-        {loggedOutNotice ? (
+      <div className="relative inline-flex items-center min-h-[30px]" ref={menuRef}>
+        {!mounted || (isLoading && !user) ? (
+          <div className="w-16 sm:w-20 h-7 rounded-lg bg-secondary/40 animate-pulse shrink-0" />
+        ) : loggedOutNotice ? (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-lg animate-in fade-in duration-200">
             <Check className="w-3.5 h-3.5" />
             <span className="hidden xs:inline">Logged out</span>
           </span>
         ) : user ? (
-          <div className="flex items-center gap-1 sm:gap-1.5">
+          <div className="flex items-center gap-1 sm:gap-1.5 animate-in fade-in duration-150">
             {/* User Pill Button (opens dropdown) */}
             <button
               type="button"
@@ -101,7 +105,6 @@ export const AccountButton: React.FC<{ compact?: boolean }> = ({ compact = false
           <button
             type="button"
             onClick={() => openAuthModal('signin')}
-            disabled={isLoading}
             className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 text-xs font-semibold transition cursor-pointer"
             title="Sign in to sync your stats"
           >
