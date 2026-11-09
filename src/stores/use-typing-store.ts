@@ -355,9 +355,12 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
           if (unmastered.length === 0 && activeStageId < stages.length) {
             nextStageId = activeStageId + 1;
             const nextStageObj = stages.find((s) => s.id === nextStageId);
+            const isArcadeUnlock = nextStageId === 3;
             notification = {
-              title: `🎉 Stage ${nextStageId} Unlocked!`,
-              message: `Congratulations! You mastered all keys in Stage ${activeStageId}. Now practicing: ${nextStageObj?.name ?? ''}.`,
+              title: isArcadeUnlock ? `🎉 Stage 3 + Arcade Mode Unlocked!` : `🎉 Stage ${nextStageId} Unlocked!`,
+              message: isArcadeUnlock
+                ? `Congratulations! You mastered the Home Row anchors! You've officially gained clearance for Redline RPM and C4 Bomb Defusal in the Arcade Zone!`
+                : `Congratulations! You mastered all keys in Stage ${activeStageId}. Now practicing: ${nextStageObj?.name ?? ''}.`,
               type: 'advance',
             };
           } else {

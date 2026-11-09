@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ArrowLeft, Keyboard, Sparkles, Gamepad2, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Keyboard, Sparkles, Gamepad2, Lock, LucideIcon } from 'lucide-react';
 import { AccountButton } from '@/components/auth';
 import { InstallAppButton } from '@/components/pwa';
 import { LayoutSelector } from './layout-selector';
+import { useArcadeUnlock } from '@/core/arcade/unlock-manager';
 
 export interface AppBarProps {
   children?: React.ReactNode;
@@ -36,6 +37,12 @@ export const AppBar: React.FC<AppBarProps> = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  const { isUnlocked } = useArcadeUnlock();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleBack = () => {
     if (typeof window !== 'undefined') {
@@ -92,20 +99,27 @@ export const AppBar: React.FC<AppBarProps> = ({
                 onClick={(e) => {
                   if (isActive) e.preventDefault();
                 }}
-                className={`inline-flex items-center gap-1.5 text-xs transition font-medium ${
-                  isActive
+                className={`inline-flex items-center gap-1.5 text-xs transition font-medium ${isActive
                     ? `pointer-events-none text-foreground font-bold cursor-default ${item.activeColor}`
                     : isSubActive
-                    ? 'text-muted-foreground hover:text-foreground font-semibold'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                      ? 'text-muted-foreground hover:text-foreground font-semibold'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
               >
                 <Icon
-                  className={`w-3.5 h-3.5 ${
-                    isActive ? item.activeColor : ''
-                  }`}
+                  className={`w-3.5 h-3.5 ${isActive ? item.activeColor : ''
+                    }`}
                 />
                 <span className="hidden sm:inline">{item.label}</span>
+                {item.href === '/arcade' && mounted && !isUnlocked && (
+                  <span
+                    title="Locked: Reach Stage 3 in Practice Lab to unlock Arcade Mode"
+                    className="inline-flex items-center gap-0.5 px-1 py-0.2 rounded text-[9px] font-mono bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                  >
+                    <Lock className="w-2.5 h-2.5" />
+                    <span className="hidden md:inline">Lock</span>
+                  </span>
+                )}
               </Link>
             </React.Fragment>
           );

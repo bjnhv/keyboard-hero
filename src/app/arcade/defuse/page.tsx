@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { AppBar } from '@/components/navigation';
 import { C4BombProp } from '@/components/arcade/c4-bomb-prop';
+import { useArcadeUnlock } from '@/core/arcade/unlock-manager';
+import { ArcadeLockedGate } from '@/components/arcade/arcade-locked-gate';
 import { csAudio } from '@/core/audio/cs-audio';
 import {
   useBombDefusalStore,
@@ -28,6 +30,7 @@ import { loadArcadeScores, ArcadeScoreRecord } from '@/local-db';
 export default function BombDefusalPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [highScores, setHighScores] = useState<ArcadeScoreRecord[]>([]);
+  const { isUnlocked } = useArcadeUnlock();
 
   const {
     status,
@@ -99,6 +102,22 @@ export default function BombDefusalPage() {
   }, [status, tick]);
 
   if (!isMounted) return null;
+
+  if (!isUnlocked) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col justify-between px-4 sm:px-6 3xl:px-10 2k:px-14 pt-2 sm:pt-3 pb-8 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full gap-6">
+        <AppBar>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-bold">
+            <Bomb className="w-3.5 h-3.5 text-rose-400" />
+            <span>Bomb Defusal</span>
+          </span>
+        </AppBar>
+        <div className="my-auto py-8">
+          <ArcadeLockedGate />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between px-4 sm:px-6 3xl:px-10 2k:px-14 pt-2 sm:pt-3 pb-8 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full gap-6">

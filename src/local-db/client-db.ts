@@ -13,6 +13,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   showVirtualKeyboard: true,
   showHandsGuide: true,
   hardcoreMode: false,
+  arcadeUnlocked: false,
   targetWpm: 40,
   targetAccuracy: 95,
 };

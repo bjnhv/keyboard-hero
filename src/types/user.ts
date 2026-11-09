@@ -26,6 +26,8 @@ export interface UserSettings {
   showHandsGuide: boolean;
   /** Hardcore mode: hides visual keyboard & future text to force blind muscle memory */
   hardcoreMode: boolean;
+  /** Whether arcade games have been unlocked (default: false until Stage 3 or manual unlock) */
+  arcadeUnlocked?: boolean;
   /** Target WPM goal */
   targetWpm: number;
   /** Target Accuracy goal percentage */

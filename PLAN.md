@@ -139,10 +139,18 @@ graph TD
 *Full game design document available in [`ARCADE.md`](./ARCADE.md).*
 - [x] **Arcade Hub Navigation & Route (`/arcade`)**:
   - Retro neon arcade hub with game selector cards, difficulty toggles, and high-score badges.
-- [ ] **Arcade Progression & Unlock Gating (Prerequisite Condition)**:
-  - Arcade Mode locked by default for new typists; unlocks only after meeting specific curriculum milestones to ensure foundational touch-typing mechanics before high-stress gamification.
-  - Locked UI state with visual padlock badge, unlock progress indicator, and explanatory modal on the Home page (`/`) and Arcade Hub (`/arcade`).
-  - *Unlock Condition (Criteria TBD)*: E.g., complete Stage 3 (Home Row mastery) or achieve minimum confidence across primary keys. Exact gating condition to be finalized.
+- [x] **Arcade Progression & Unlock Gating (Prerequisite Condition)**:
+  - Arcade Mode gated by default for new typists; unlocks only after meeting specific curriculum milestones to ensure foundational touch-typing mechanics before high-stress gamification.
+  - Unlock Conditions:
+    - Primary Goal: Reaching Stage 3 (Home Row mastery: e.g. `f, j, d, k, s, l, a, ;` in QWERTY, `u, h, e, t, o, n, a, s, i, d` in Dvorak, `כ, ח, ג, י, ש, ד, ע, ל, ף, ך` in Hebrew) in any keyboard layout.
+    - Alternate Goal: Mastering $\ge 6$ character keys with $\ge 70\%$ confidence.
+    - Quick-Bypass: *"Already an experienced typist? Unlock immediately"* one-click override for advanced typists.
+  - UI Experience:
+    - Cyber padlock badge (`<Lock />`) and clearance progress indicator on `/arcade`.
+    - Protected sub-routes (`/arcade/redline`, `/arcade/defuse`) with full clearance gate.
+    - Navigation bar (`<AppBar />`) padlock tag on the Arcade link when locked.
+    - Celebratory notification banner in Practice Lab (`/learn`) upon advancing to Stage 3.
+  - Fully tested with Vitest unit tests in `src/core/arcade/__tests__/unlock-manager.test.ts`.
 - [x] **Mini-Game 1: "Redline RPM" (Speedometer Sustain Challenge)**:
   - Analog & digital SVG speedometer dial responding in real time to rolling WPM.
   - Realistic automotive instrument cluster with $270^\circ$ sweep (135° to 405°), mathematical needle-to-tick alignment, and MID HUD.
