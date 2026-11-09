@@ -3,6 +3,7 @@ import { SyncBatchPayloadSchema } from '@/server/dtos/sync.dto';
 import { syncService } from '@/server/services/sync.service';
 import { ApiResponse } from '@/types/api';
 import { SyncBatchResponse } from '@/types/sync';
+import { getAuthenticatedUser } from '@/server/auth';
 
 export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse<SyncBatchResponse>>> {
   try {
@@ -28,7 +29,11 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse<S
       );
     }
 
-    const result = await syncService.syncSessions(parseResult.data);
+    // Authenticate session if user is logged in
+    const authUser = await getAuthenticatedUser(req);
+    const authenticatedUserId = authUser?.id ?? parseResult.data.userId;
+
+    const result = await syncService.syncSessions(parseResult.data, authenticatedUserId);
 
     return NextResponse.json(
       {

@@ -163,23 +163,23 @@ graph TD
   - Dexie table `arcadeScores` tracking personal bests, stars, and medals per difficulty tier.
   - Web Audio procedural SFX (engine revs, countdown beeps, defusal zaps, detonation).
 
-### Phase 10 (Optional): Cloud Authentication (Google OAuth) & Cross-Device Sync
-*Goal: Allow users to sign in with their Google account so curriculum progression, key confidence, settings, and arcade high scores sync seamlessly across devices (desktop, laptop, tablet).*
-- [ ] **Google OAuth Authentication (Auth.js / NextAuth v5)**:
-  - Configure Google OAuth Provider (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`).
-  - Integrate Auth.js Drizzle Adapter (`@auth/drizzle-adapter`) with existing PostgreSQL database (`src/db/schema.ts`).
-  - Store user identity (`id`, `name`, `email`, `image`) and manage secure HTTP-only session cookies.
-  - Header profile badge: Display avatar, user display name, sign-in button, and sign-out dropdown.
-- [ ] **Anonymous / Guest to Authenticated Account Linking**:
+### Phase 10: Cloud Authentication (Google OAuth) & Cross-Device Sync
+*Goal: Allow users to sign in with their Google account so curriculum progression, key confidence, settings, and arcade high scores sync seamlessly across devices (desktop, laptop).*
+- [x] **Google OAuth Authentication (Neon Auth / Better Auth)**:
+  - Configure Google OAuth Provider and Neon Auth proxy (`/api/auth/[...path]`).
+  - Store user identity (`id`, `name`, `email`, `image`) and manage secure session cookies across HTTP localhost and HTTPS production.
+  - Header profile badge: Display avatar, user display name, sign-in modal, cloud sync status, and sign-out dropdown.
+- [x] **Anonymous / Guest to Authenticated Account Linking**:
   - Maintain 100% offline-first capability for guest users (no login required to practice).
-  - When a guest user logs in with Google for the first time, prompt: *"Merge your local practice history and progress into this Google account?"*.
-  - Seamlessly migrate Dexie.js local sessions and key progress to the authenticated PostgreSQL user profile.
-- [ ] **Bidirectional Cross-Device Synchronization Engine**:
+  - When a guest user logs in for the first time with existing local practice sessions, prompt: *"Merge your local practice history and progress into this account?"* (`<GuestMergeModal />`).
+  - Seamlessly migrate Dexie.js local sessions and key progress to the authenticated PostgreSQL user profile (`mergeGuestSessions`).
+- [x] **Bidirectional Cross-Device Synchronization Engine**:
   - **New Device Hydration (Cloud -> Local)**:
-    - Upon signing in on a new computer or device, automatically pull lifetime statistics, key progress heatmap data, and unlocked curriculum stages from PostgreSQL down to Dexie IndexedDB.
+    - Upon signing in on a new computer or device, automatically pull lifetime statistics, key progress heatmap data, and unlocked curriculum stages from PostgreSQL down to Dexie IndexedDB via `/api/sync/hydrate`.
   - **Auto-Sync on Session Completion (Local -> Cloud)**:
-    - Push completed typing sessions, rolling key confidence, and arcade scores to `/api/sync/sessions` tagged with authenticated `userId`.
-  - **Conflict Resolution (Last-Write-Wins & Highest Stat Merge)**:
+    - Push completed typing sessions and rolling key confidence to `/api/sync/sessions` tagged with authenticated `userId`.
+    - Real-time instant sync dispatch upon session completion with manual "Sync Now" button in the account dropdown.
+  - **Conflict Resolution (Highest Stat Merge & Last-Write-Wins Accuracy)**:
     - If practice occurred on multiple offline devices, resolve conflicts by merging max key attempts, highest confidence scores, and preserving all unique session timestamps.
 
 ---

@@ -26,29 +26,44 @@ export const PWAProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // 1. Register Service Worker in production / supported environments
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
+    if (typeof window === 'undefined') return;
+
+    // 1. Check if an early prompt was captured globally
+    const earlyPrompt = (window as unknown as { __pwaInstallPrompt?: BeforeInstallPromptEvent })
+      .__pwaInstallPrompt;
+    if (earlyPrompt) {
+      setInstallPrompt(earlyPrompt);
+    }
+
+    // 2. Register Service Worker with readyState check (fixes React hydration missing load event)
+    if ('serviceWorker' in navigator) {
+      const registerSW = () => {
         navigator.serviceWorker
-          .register('/sw.js')
+          .register('/sw.js', { scope: '/' })
           .then((reg) => {
-            // Periodic update check
+            console.log('[PWA] Service Worker registered with scope:', reg.scope);
             reg.onupdatefound = () => {
               const installingWorker = reg.installing;
               if (installingWorker) {
                 installingWorker.onstatechange = () => {
                   if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    console.log('[PWA] New version available.');
+                    console.log('[PWA] New version installed and available.');
                   }
                 };
               }
             };
           })
           .catch((err) => console.warn('[PWA] Service Worker registration failed:', err));
-      });
+      };
+
+      if (document.readyState === 'complete') {
+        registerSW();
+      } else {
+        window.addEventListener('load', registerSW);
+      }
     }
 
-    // 2. Check standalone display mode (running as installed app)
+    // 3. Check standalone display mode (running as installed app)
     const checkStandalone = () => {
       const isStandaloneMode =
         window.matchMedia('(display-mode: standalone)').matches ||
@@ -58,15 +73,20 @@ export const PWAProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     checkStandalone();
 
-    // 3. Capture beforeinstallprompt event
+    // 4. Capture beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setInstallPrompt(e as BeforeInstallPromptEvent);
+      const promptEvent = e as BeforeInstallPromptEvent;
+      (window as unknown as { __pwaInstallPrompt?: BeforeInstallPromptEvent }).__pwaInstallPrompt = promptEvent;
+      setInstallPrompt(promptEvent);
+      console.log('[PWA] Captured beforeinstallprompt event.');
     };
 
     const handleAppInstalled = () => {
       setInstallPrompt(null);
+      (window as unknown as { __pwaInstallPrompt?: BeforeInstallPromptEvent | null }).__pwaInstallPrompt = null;
       setIsStandalone(true);
+      console.log('[PWA] App successfully installed.');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -79,12 +99,16 @@ export const PWAProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   const installApp = async () => {
-    if (!installPrompt) return;
+    if (!installPrompt) {
+      console.log('[PWA] Install prompt not available.');
+      return;
+    }
     try {
       await installPrompt.prompt();
       const choice = await installPrompt.userChoice;
       if (choice.outcome === 'accepted') {
         setInstallPrompt(null);
+        (window as unknown as { __pwaInstallPrompt?: null }).__pwaInstallPrompt = null;
       }
     } catch (err) {
       console.warn('[PWA] Install prompt failed:', err);

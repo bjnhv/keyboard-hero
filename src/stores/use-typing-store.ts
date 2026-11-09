@@ -14,6 +14,7 @@ import { findKeyDefinition, QWERTY_LAYOUT } from '@/core/layouts';
 import { audioSynth } from '@/core/audio/mechanical-synth';
 import { LocalSessionRecord } from '@/types/sync';
 import { UiFontSize } from '@/types/user';
+import { useAuthStore } from './use-auth-store';
 import {
   persistSession,
   persistKeyProgress,
@@ -21,6 +22,7 @@ import {
   loadSettings,
   loadKeyProgressMap,
   clearLocalProgress,
+  syncManager,
 } from '@/local-db';
 
 /**
@@ -56,7 +58,7 @@ interface TypingStoreState {
   stageNotification: StageNotification | null;
 
   // Actions
-  loadFromLocalDb: () => Promise<void>;
+  loadFromLocalDb: (force?: boolean) => Promise<void>;
   initPractice: (stageId?: number) => void;
   handleKeyDown: (key: string, code: string) => void;
   handleKeyUp: (code: string) => void;
@@ -112,8 +114,8 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
       set({ stageNotification: null });
     },
 
-    loadFromLocalDb: async () => {
-      if (typeof window === 'undefined' || get().isLoadedFromDb) return;
+    loadFromLocalDb: async (force = false) => {
+      if (typeof window === 'undefined' || (get().isLoadedFromDb && !force)) return;
       try {
         const settings = await loadSettings();
         const progressMap = await loadKeyProgressMap();
@@ -218,8 +220,10 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
 
         // Persist session and key progress in background to IndexedDB
         if (typeof window !== 'undefined') {
+          const authUser = useAuthStore.getState().user;
           const sessionRecord: LocalSessionRecord = {
             id: `session-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+            userId: authUser?.id,
             stageId: get().activeStageId,
             metrics,
             completedAt: new Date().toISOString(),
@@ -227,9 +231,11 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
             syncRetries: 0,
             createdAt: Date.now(),
           };
-          persistSession(sessionRecord).catch((err) =>
-            console.error('Failed to persist session to IndexedDB:', err)
-          );
+          persistSession(sessionRecord)
+            .then(() => syncManager.triggerSync())
+            .catch((err) =>
+              console.error('Failed to persist session to IndexedDB:', err)
+            );
           persistKeyProgress(Object.values(updatedProgress)).catch((err) =>
             console.error('Failed to persist key progress to IndexedDB:', err)
           );
@@ -422,4 +428,15 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
     },
   };
 });
+
+if (typeof window !== 'undefined') {
+  syncManager.addListener(() => {
+    // Only reload if the engine is currently idle or completed to avoid disrupting an active practice run
+    const state = useTypingStore.getState().activeState;
+    if (state.status === 'idle' || state.status === 'completed') {
+      useTypingStore.getState().loadFromLocalDb(true);
+    }
+  });
+}
+
 

@@ -3,13 +3,16 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuthStore } from '@/stores/use-auth-store';
 import { AuthModal } from './auth-modal';
-import { LogIn, LogOut, User, Check, ChevronDown } from 'lucide-react';
+import { LogIn, LogOut, User, Check, ChevronDown, RefreshCw } from 'lucide-react';
+import { syncManager } from '@/local-db';
 
 export const AccountButton: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
   const { user, isLoading, openAuthModal, signOut, initAuth } = useAuthStore();
   const [mounted, setMounted] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loggedOutNotice, setLoggedOutNotice] = useState(false);
+  const [isSyncingNow, setIsSyncingNow] = useState(false);
+  const [syncSuccess, setSyncSuccess] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Initialize session on client mount
@@ -17,6 +20,22 @@ export const AccountButton: React.FC<{ compact?: boolean }> = ({ compact = false
     setMounted(true);
     initAuth();
   }, [initAuth]);
+
+  const handleManualSync = async () => {
+    if (!user || isSyncingNow) return;
+    setIsSyncingNow(true);
+    setSyncSuccess(false);
+    try {
+      await syncManager.triggerSync();
+      await syncManager.hydrateFromCloud(user.id);
+      setSyncSuccess(true);
+      setTimeout(() => setSyncSuccess(false), 2000);
+    } catch {
+      // ignore
+    } finally {
+      setIsSyncingNow(false);
+    }
+  };
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -89,6 +108,19 @@ export const AccountButton: React.FC<{ compact?: boolean }> = ({ compact = false
                     <span>Cloud Sync Active</span>
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleManualSync}
+                  disabled={isSyncingNow}
+                  className="w-full flex items-center justify-between px-2 py-1.5 text-xs text-foreground hover:bg-secondary/70 rounded-lg transition cursor-pointer font-medium disabled:opacity-50 mb-1"
+                >
+                  <div className="flex items-center gap-2">
+                    <RefreshCw className={`w-3.5 h-3.5 text-primary ${isSyncingNow ? 'animate-spin' : ''}`} />
+                    <span>{isSyncingNow ? 'Syncing...' : 'Sync Now'}</span>
+                  </div>
+                  {syncSuccess && <Check className="w-3.5 h-3.5 text-emerald-400" />}
+                </button>
 
                 <button
                   type="button"

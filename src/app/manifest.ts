@@ -7,6 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description:
       'Offline-first blind touch-typing tutor with muscle memory progression and gamified arcade challenges',
     start_url: '/',
+    id: '/',
+    scope: '/',
     display: 'standalone',
     background_color: '#090d16',
     theme_color: '#090d16',
