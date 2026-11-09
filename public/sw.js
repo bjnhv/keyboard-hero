@@ -1,5 +1,5 @@
 // Keyboard Hero - Offline-First Service Worker (Production-Grade PWA)
-const CACHE_NAME = 'keyboard-hero-v4';
+const CACHE_NAME = 'keyboard-hero-v6';
 
 const PRECACHE_ROUTES = [
   '/',
@@ -7,6 +7,7 @@ const PRECACHE_ROUTES = [
   '/stats',
   '/arcade',
   '/arcade/redline',
+  '/arcade/defuse',
 ];
 
 const PRECACHE_STATIC_ASSETS = [
@@ -18,6 +19,14 @@ const PRECACHE_STATIC_ASSETS = [
   '/icons/icon-512.png',
   '/icons/maskable-512.png',
   '/icons/apple-touch-icon.png',
+  '/sounds/cs/bombpl.wav',
+  '/sounds/cs/c4_beep1.wav',
+  '/sounds/cs/c4_disarm.wav',
+  '/sounds/cs/c4_explode1.wav',
+  '/sounds/cs/bombdef.wav',
+  '/sounds/cs/ctwin.wav',
+  '/sounds/cs/terwin.wav',
+  '/sounds/cs/letsgo.wav',
 ];
 
 /**

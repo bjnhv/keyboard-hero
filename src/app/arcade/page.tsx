@@ -103,27 +103,29 @@ export default function ArcadeHubPage() {
           </Link>
         </div>
 
-        {/* GAME 2: BOMB DEFUSAL PROTOCOL (PREVIEW) */}
-        <div className="relative rounded-3xl border border-rose-500/30 bg-gradient-to-br from-card via-card to-rose-950/20 p-6 sm:p-8 flex flex-col justify-between shadow-xl">
+        {/* GAME 2: BOMB DEFUSAL PROTOCOL (ACTIVE) */}
+        <div className="relative rounded-3xl border border-rose-500/40 bg-gradient-to-br from-card via-card to-rose-950/20 p-6 sm:p-8 flex flex-col justify-between shadow-2xl hover:border-rose-500/60 transition group overflow-hidden">
           <div className="absolute top-0 right-0 p-4">
-            <span className="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold uppercase tracking-wider">
-              Next Release
+            <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold uppercase tracking-wider animate-pulse">
+              Playable Now
             </span>
           </div>
 
           <div>
-            <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 mb-4 shadow-lg shadow-rose-900/20">
+            <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 mb-4 shadow-lg shadow-rose-900/20 group-hover:scale-105 transition-transform">
               <Bomb className="w-7 h-7" />
             </div>
 
             <h2 className="text-2xl font-black text-foreground mb-2 flex items-center gap-2">
               Bomb Defusal Protocol
-              <Clock className="w-5 h-5 text-amber-400 animate-spin" />
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-400 uppercase tracking-widest border border-rose-500/30">
+                CS Theme
+              </span>
             </h2>
 
             <p className="text-xs sm:text-sm text-muted-foreground mb-6 leading-relaxed">
-              Disarm a ticking C4 explosive payload before the digital timer strikes zero. Beware: every single typo
-              immediately penalizes you with a harsh deduction (-3s) from the countdown!
+              Disarm a ticking Counter-Strike C4 explosive payload before the digital timer strikes zero. Beware: every single typo
+              immediately penalizes you with a harsh time deduction from the countdown clock!
             </p>
 
             <div className="flex flex-wrap gap-2 mb-6">
@@ -131,7 +133,10 @@ export default function ArcadeHubPage() {
                 ⏱️ Precision Countdown
               </span>
               <span className="px-2.5 py-1 rounded-lg bg-secondary text-foreground text-[11px] font-semibold border border-border">
-                💥 -3s Typo Deduction Penalty
+                💥 Typo Time Penalties
+              </span>
+              <span className="px-2.5 py-1 rounded-lg bg-secondary text-foreground text-[11px] font-semibold border border-border">
+                🔊 CS Radio Voice & C4 Beeps
               </span>
               <span className="px-2.5 py-1 rounded-lg bg-secondary text-foreground text-[11px] font-semibold border border-border">
                 ✂️ Multi-Phase Wire Cutting
@@ -139,12 +144,13 @@ export default function ArcadeHubPage() {
             </div>
           </div>
 
-          <button
-            disabled
-            className="w-full py-3.5 px-4 rounded-xl font-bold bg-secondary/50 text-muted-foreground border border-border flex items-center justify-center gap-2 cursor-not-allowed opacity-60"
+          <Link
+            href="/arcade/defuse"
+            className="w-full py-3.5 px-4 rounded-xl font-bold bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center gap-2 transition shadow-lg shadow-rose-900/30 cursor-pointer"
           >
-            <span>In Construction</span>
-          </button>
+            <Play className="w-4 h-4 fill-current" />
+            <span>Launch Defusal Mission</span>
+          </Link>
         </div>
 
         {/* GAME 3: WORD INVADERS (LABS) */}

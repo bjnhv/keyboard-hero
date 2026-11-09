@@ -75,7 +75,7 @@ graph TD
 
 ### Phase 4: Virtual Keyboard & Visual Guidance
 - [x] **Layout System**:
-  - Multi-layout support (QWERTY, Colemak, Dvorak).
+  - Foundational keyboard matrix with key dimensions and finger assignments (QWERTY default; multi-layout engine expanded in Phase 11).
   - Define keyboard matrix with key dimensions and finger assignments.
 - [x] **Interactive Visual Keyboard Component**:
   - Responsive SVG / CSS Grid keyboard.
@@ -149,11 +149,19 @@ graph TD
   - Redline threshold marker: player must keep speed in the red zone for $X$ consecutive seconds.
   - Turbo boost particles, engine downshift audio cues, and decay penalties if dropping below the line.
   - Tiers: Amateur (35 WPM / 10s), Sport (50 WPM / 15s), Supercar (75 WPM / 20s), Hypercar (100+ WPM / 25s).
-- [ ] **Mini-Game 2: "Bomb Defusal Protocol" (Crisis Countdown)**:
-  - Ticking briefcase bomb prop with dynamic digital LED countdown clock.
-  - Severe mistake penalty: every typo deducts $-2.0\text{s}$ to $-5.0\text{s}$ from remaining time with alarm siren and screen shake.
-  - Multi-phase defusal sequences (passphrases, wire cutting, cryptographic hashes).
+- [x] **Mini-Game 2: "Bomb Defusal Protocol" (Crisis Countdown)**:
+  - Counter-Strike themed C4 Pelican case prop with dynamic 7-segment digital LED countdown clock and status pulsing diode.
+  - Authentic Counter-Strike audio cues (preloaded & cached in Service Worker for 100% offline play):
+    - "The bomb has been planted" radio dispatch (`bombpl.wav`) on round start.
+    - Accelerating C4 digital countdown beeps (`c4_beep1.wav`, intervals accelerating down to 80ms).
+    - Wire snipping sound (`c4_disarm.wav`) on completed phase wire cuts.
+    - Massive C4 detonation explosion (`c4_explode1.wav`) + "Terrorists win" radio dispatch (`terwin.wav`) on timeout.
+    - "Bomb has been defused" (`bombdef.wav`) + "Counter-Terrorists win" (`ctwin.wav`) on victory.
+    - Procedural fallback Web Audio synth + Web Speech API for graceful degradation.
+  - Severe mistake penalty: every typo deducts $-1.5\text{s}$ to $-5.0\text{s}$ from remaining time with alarm zap and screen shake.
+  - Multi-phase defusal sequences with visual cut wires: Disarm codes (e.g. `7355608`), terminal commands, and cryptographic hashes.
   - Tiers: Recruit (45s, $-1.5\text{s}$), Agent (30s, $-3.0\text{s}$), Special Forces (22s, $-4.0\text{s}$), Impossible (15s, $-5.0\text{s}$).
+  - Fully tested with Vitest unit tests covering countdown tick, typo penalty deductions, phase wire cutting, and win/loss states.
 - [ ] **Brainstormed Future Mini-Games**:
   - [ ] *Word Invaders*: Retro space defense destroying falling alien ships with typed words.
   - [ ] *Rhythm DJ / Beat Match*: Guitar Hero style vertical note highway training cadence and dwell consistency.
@@ -181,6 +189,39 @@ graph TD
     - Real-time instant sync dispatch upon session completion with manual "Sync Now" button in the account dropdown.
   - **Conflict Resolution (Highest Stat Merge & Last-Write-Wins Accuracy)**:
     - If practice occurred on multiple offline devices, resolve conflicts by merging max key attempts, highest confidence scores, and preserving all unique session timestamps.
+
+### Phase 11: Multi-Layout & Internationalization Engine (Dvorak, Colemak & Hebrew RTL)
+*Goal: Enable typists to master alternative English ergonomic layouts (Dvorak, Colemak) and international non-Latin layouts (Hebrew standard SI-1452 with full Right-to-Left RTL text rendering).*
+
+- [ ] **Ergonomic English Layouts (Dvorak & Colemak)**:
+  - **Dvorak Matrix (`src/core/layouts/dvorak.ts`)**:
+    - Complete Dvorak key mapping, finger assignments, and homing bumps on keys `U` (`KeyF`) and `H` (`KeyJ`).
+    - Dvorak-specific curriculum progression ladder (Stages starting with Home row vowels/anchors: `a`, `o`, `e`, `u`, `i`, `d`, `h`, `t`, `n`, `s`).
+  - **Colemak Matrix (`src/core/layouts/colemak.ts`)**:
+    - Colemak key mapping, finger assignments, and homing bumps on `T` (`KeyF`) and `N` (`KeyJ`).
+    - Colemak-specific curriculum progression ladder.
+
+- [ ] **Hebrew Language & Right-to-Left (RTL) Layout Engine**:
+  - **Hebrew Standard Matrix (`src/core/layouts/hebrew.ts`)**:
+    - Standard Israeli SI-1452 keyboard mapping.
+    - Homing tactile anchor keys on `כ` (physical `KeyF`) and `ח` (physical `KeyJ`).
+    - Support for standard letters, final letters (*Sofiot*: `ך`, `ם`, `ן`, `ף`, `ץ`), and Hebrew punctuation.
+  - **RTL Typing Engine & Canvas Integration**:
+    - Dynamic bi-directional layout support: text direction switches to `dir="rtl"` when Hebrew layout is active.
+    - Caret positioning, smooth cursor translation, and character diffing aligned right-to-left.
+    - Hebrew pseudo-word / n-gram generator producing pronounceable Hebrew syllables and words using unlocked letters.
+  - **Hebrew Curriculum Progression Ladder**:
+    - Stage 1: Home row anchors (`כ`, `ח`, `ג`, `י`).
+    - Stage 2: Full home row (`ש`, `ד`, `ע`, `ל`, `ף`, `,`).
+    - Stage 3: Top row reaches (`ק`, `ר`, `א`, `ט`, `ו`, `ן`, `ם`, `פ`).
+    - Stage 4: Bottom row reaches (`ז`, `ס`, `ב`, `ה`, `נ`, `מ`, `צ`, `ת`, `ץ`).
+    - Stage 5: Final letter mastery and Hebrew punctuation (`.`, `,`, `'`, `/`, `;`).
+
+- [ ] **Interactive Layout Switcher & State Management**:
+  - Top navigation bar layout selector dropdown (`QWERTY`, `Dvorak`, `Colemak`, `עברית / Hebrew`).
+  - Real-time visual keyboard switching: SVG keycaps dynamically display the active layout's character set and shifted symbols.
+  - Transparent hands guide and finger pills dynamically highlight the correct physical finger based on the active layout.
+  - Per-layout progress persistence: Dexie `userSettings.keyboardLayout`, tracking independent curriculum stages and key confidence per layout.
 
 ---
 
