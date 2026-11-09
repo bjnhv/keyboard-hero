@@ -1,5 +1,5 @@
 // Keyboard Hero - Offline-First Service Worker (Production-Grade PWA)
-const CACHE_NAME = 'keyboard-hero-v6';
+const CACHE_NAME = 'keyboard-hero-v7';
 
 const PRECACHE_ROUTES = [
   '/',
@@ -8,6 +8,7 @@ const PRECACHE_ROUTES = [
   '/arcade',
   '/arcade/redline',
   '/arcade/defuse',
+  '/arcade/invaders',
 ];
 
 const PRECACHE_STATIC_ASSETS = [
@@ -20,6 +21,7 @@ const PRECACHE_STATIC_ASSETS = [
   '/icons/maskable-512.png',
   '/icons/apple-touch-icon.png',
   '/og-image.png',
+  // Mini-Game 2 (CS C4 Defusal)
   '/sounds/cs/bombpl.wav',
   '/sounds/cs/c4_beep1.wav',
   '/sounds/cs/c4_disarm.wav',
@@ -28,6 +30,16 @@ const PRECACHE_STATIC_ASSETS = [
   '/sounds/cs/ctwin.wav',
   '/sounds/cs/terwin.wav',
   '/sounds/cs/letsgo.wav',
+  // Mini-Game 3 (1978 Space Invaders Original Sounds)
+  '/sounds/invaders/fastinvader1.wav',
+  '/sounds/invaders/fastinvader2.wav',
+  '/sounds/invaders/fastinvader3.wav',
+  '/sounds/invaders/fastinvader4.wav',
+  '/sounds/invaders/shoot.wav',
+  '/sounds/invaders/invaderkilled.wav',
+  '/sounds/invaders/explosion.wav',
+  '/sounds/invaders/ufo_highpitch.wav',
+  '/sounds/invaders/ufo_lowpitch.wav',
 ];
 
 /**
@@ -59,7 +71,7 @@ async function precacheRouteWithAssets(cache, routeUrl) {
                   return cache.put(assetPath, res);
                 }
               })
-              .catch(() => {});
+              .catch(() => { });
           }
         })
       );
@@ -85,7 +97,7 @@ self.addEventListener('install', (event) => {
             if (res && res.ok) {
               await cache.put(url, res);
             }
-          } catch {}
+          } catch { }
         })
       );
 
@@ -244,7 +256,7 @@ self.addEventListener('fetch', (event) => {
                 cache.put(request, networkResponse.clone());
               }
             })
-            .catch(() => {});
+            .catch(() => { });
           return cachedResponse;
         }
 

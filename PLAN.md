@@ -170,10 +170,24 @@ graph TD
   - Multi-phase defusal sequences with visual cut wires: Disarm codes (e.g. `7355608`), terminal commands, and cryptographic hashes.
   - Tiers: Recruit (45s, $-1.5\text{s}$), Agent (30s, $-3.0\text{s}$), Special Forces (22s, $-4.0\text{s}$), Impossible (15s, $-5.0\text{s}$).
   - Fully tested with Vitest unit tests covering countdown tick, typo penalty deductions, phase wire cutting, and win/loss states.
+- [x] **Mini-Game 3: "Word Invaders" (Retro 1978 Space Defense)**:
+  - Space Invaders 1978 themed arcade cabinet experience with retro CRT phosphor scanlines and animated pixel-art aliens (Squid, Crab, Octopus, Mystery UFO, and Defense Cannon).
+  - Authentic 1978 original Space Invaders arcade sounds (preloaded & cached in Service Worker v7 for 100% offline play):
+    - Iconic 4-note descending fleet march (`fastinvader1.wav`, `fastinvader2.wav`, `fastinvader3.wav`, `fastinvader4.wav`) dynamically accelerating tempo as invaders are destroyed.
+    - Laser blast cannon shot (`shoot.wav`) firing glowing plasma beams toward target-locked invaders.
+    - Crunchy alien explosion / vaporize (`invaderkilled.wav`) with particle bursts.
+    - Mystery Flying Saucer (UFO) continuous siren warble (`ufo_highpitch.wav`) and bonus hit explosion (`ufo_lowpitch.wav`).
+    - Base defense and shield breach explosion (`explosion.wav`).
+    - Procedural Web Audio synthesizers for 100% resilient fallback.
+  - Multi-tier vocabulary and mechanics:
+    - Destructible bunker shields defending the ground cannon.
+    - Tiers: Cadet (3-4 letter words, 4 shields), Commander (4-6 letter words, 3 shields, UFO flybys), Galactic Ace (5-8 letter words, 2 shields), Supernova (7-10 letter words, 1 shield).
+    - Multi-layout support (QWERTY, Dvorak, Colemak, and Hebrew RTL words).
+  - High score tracking in IndexedDB (`arcadeScores` with `gameId: 'invaders'`).
+  - Fully tested with Vitest unit test suite (`src/stores/__tests__/word-invaders-store.test.ts`).
 - [ ] **Brainstormed Future Mini-Games**:
-  - [ ] *Word Invaders*: Retro space defense destroying falling alien ships with typed words.
-  - [ ] *Rhythm DJ / Beat Match*: Guitar Hero style vertical note highway training cadence and dwell consistency.
   - [ ] *Terminal Hacker*: Cyber infiltration code-runner keeping security trace route below 100%.
+  - [ ] *Rhythm DJ / Beat Match*: Guitar Hero style vertical note highway training cadence and dwell consistency.
   - [ ] *Ghost Drag Race*: 1/4-mile drag duel against your personal best ghost car.
 - [x] **Arcade Storage & Audio**:
   - Dexie table `arcadeScores` tracking personal bests, stars, and medals per difficulty tier.
