@@ -221,8 +221,8 @@ export default function ArcadeHubPage() {
         {/* GAME 3: WORD INVADERS (ACTIVE) */}
         <div
           className={`relative rounded-3xl border ${isUnlocked
-              ? 'border-emerald-500/40 bg-gradient-to-br from-card via-card to-emerald-950/20 shadow-2xl hover:border-emerald-500/60'
-              : 'border-zinc-800 bg-card/60 opacity-85'
+            ? 'border-emerald-500/40 bg-gradient-to-br from-card via-card to-emerald-950/20 shadow-2xl hover:border-emerald-500/60'
+            : 'border-zinc-800 bg-card/60 opacity-85'
             } p-6 sm:p-8 flex flex-col justify-between transition group overflow-hidden`}
         >
           <div className="absolute top-0 right-0 p-4">
@@ -241,8 +241,8 @@ export default function ArcadeHubPage() {
           <div>
             <div
               className={`w-14 h-14 rounded-2xl ${isUnlocked
-                  ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 group-hover:scale-105'
-                  : 'bg-zinc-800/60 border-zinc-700/50 text-zinc-400'
+                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 group-hover:scale-105'
+                : 'bg-zinc-800/60 border-zinc-700/50 text-zinc-400'
                 } border flex items-center justify-center mb-4 shadow-lg transition-transform`}
             >
               <Rocket className="w-7 h-7" />
@@ -295,59 +295,122 @@ export default function ArcadeHubPage() {
           )}
         </div>
 
-        {/* GAME 4: TERMINAL HACKER (LABS) */}
-        <div className="rounded-2xl border border-border/80 bg-secondary/20 p-5 flex flex-col justify-between">
-          <div>
-            <div className="w-10 h-10 rounded-xl bg-secondary border border-border flex items-center justify-center text-emerald-400 mb-3">
-              <Code2 className="w-5 h-5" />
+          {/* GAME 4: TERMINAL HACKER (ACTIVE) */}
+          <div
+            className={`relative rounded-3xl border ${isUnlocked
+                ? 'border-emerald-500/40 bg-gradient-to-br from-card via-card to-emerald-950/20 shadow-2xl hover:border-emerald-500/60'
+                : 'border-zinc-800 bg-card/60 opacity-85'
+              } p-6 sm:p-8 flex flex-col justify-between transition group overflow-hidden`}
+          >
+            <div className="absolute top-0 right-0 p-4">
+              {isUnlocked ? (
+                <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold uppercase tracking-wider animate-pulse">
+                  Playable Now
+                </span>
+              ) : (
+                <span className="px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 font-mono">
+                  <Lock className="w-3 h-3 text-amber-400" />
+                  Locked // Stage 3
+                </span>
+              )}
             </div>
-            <h3 className="text-lg font-bold text-foreground mb-1">Terminal Hacker</h3>
-            <p className="text-xs text-muted-foreground mb-3">
-              Matrix-style terminal infiltration typing real code syntax, keywords, and brackets to evade security trace routes.
-            </p>
-          </div>
-          <span className="text-[11px] text-muted-foreground/60 font-mono">Status: Planned in Arcade Roadmap</span>
-        </div>
-      </section>
 
-      {/* Arcade Personal Bests (Dexie) */}
-      {scores.length > 0 && (
-        <section className="flex flex-col gap-3 mt-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-amber-400" />
-              Your Arcade Records
-            </h3>
-            <span className="text-xs text-muted-foreground">Stored locally in IndexedDB</span>
-          </div>
+            <div>
+                <div
+                  className={`w-14 h-14 rounded-2xl ${isUnlocked
+                      ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 group-hover:scale-105'
+                      : 'bg-zinc-800/60 border-zinc-700/50 text-zinc-400'
+                    } border flex items-center justify-center mb-4 shadow-lg transition-transform`}
+                >
+                  <Code2 className="w-7 h-7" />
+                </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {scores.slice(0, 3).map((record) => (
-              <div
-                key={record.id}
-                className="p-3.5 rounded-xl bg-secondary/30 border border-border/80 flex items-center justify-between"
-              >
-                <div>
-                  <span className="text-xs font-bold text-foreground capitalize block">
-                    {record.gameId} ({record.difficulty})
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {new Date(record.achievedAt).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span className="text-lg font-black text-primary font-mono block">
-                    {record.wpm} WPM
-                  </span>
-                  <span className="text-[10px] text-emerald-400 font-semibold">
-                    {record.accuracy}% Acc
-                  </span>
-                </div>
+                  <h2 className="text-2xl font-black text-foreground mb-2 flex items-center gap-2">
+                    Terminal Hacker
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 uppercase tracking-widest border border-emerald-500/30">
+                      Matrix Cypher
+                    </span>
+                  </h2>
+
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-6 leading-relaxed">
+                    Infiltrate secure mainframes by typing real code syntax, brackets, and crypto tokens.
+                    Outpace the accelerating security trace route and deploy ICE_PICK exploits to freeze detection!
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    <span className="px-2.5 py-1 rounded-lg bg-secondary text-foreground text-[11px] font-semibold border border-border">
+                      💻 4 Infiltration Tiers (Script Kiddie to Ghost)
+                    </span>
+                    <span className="px-2.5 py-1 rounded-lg bg-secondary text-foreground text-[11px] font-semibold border border-border">
+                      ⚡ Real-Time Security Trace Meter
+                    </span>
+                    <span className="px-2.5 py-1 rounded-lg bg-secondary text-foreground text-[11px] font-semibold border border-border">
+                      ❄️ ICE_PICK Trace Freeze Exploits
+                    </span>
+                    <span className="px-2.5 py-1 rounded-lg bg-secondary text-foreground text-[11px] font-semibold border border-border">
+                      🔊 Cyber Terminal Keystroke SFX
+                    </span>
+                  </div>
               </div>
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
-  );
+
+              {isUnlocked ? (
+                <Link
+                  href="/arcade/hacker"
+                  className="w-full py-3.5 px-4 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-900/30 cursor-pointer"
+                >
+                  <Play className="w-4 h-4 fill-current" />
+                  <span>Initialize Terminal Infiltration</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/learn"
+                  className="w-full py-3.5 px-4 rounded-xl font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center justify-center gap-2 transition cursor-pointer"
+                >
+                  <Lock className="w-4 h-4" />
+                  <span>Unlock in Practice Lab</span>
+                </Link>
+              )}
+            </div>
+          </section>
+
+          {/* Arcade Personal Bests (Dexie) */}
+          {scores.length > 0 && (
+            <section className="flex flex-col gap-3 mt-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-amber-400" />
+                  Your Arcade Records
+                </h3>
+                <span className="text-xs text-muted-foreground">Stored locally in IndexedDB</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {scores.slice(0, 3).map((record) => (
+                  <div
+                    key={record.id}
+                    className="p-3.5 rounded-xl bg-secondary/30 border border-border/80 flex items-center justify-between"
+                  >
+                    <div>
+                      <span className="text-xs font-bold text-foreground capitalize block">
+                        {record.gameId} ({record.difficulty})
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {new Date(record.achievedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-lg font-black text-primary font-mono block">
+                        {record.wpm} WPM
+                      </span>
+                      <span className="text-[10px] text-emerald-400 font-semibold">
+                        {record.accuracy}% Acc
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+        );
 }

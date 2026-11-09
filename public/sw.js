@@ -1,5 +1,5 @@
 // Keyboard Hero - Offline-First Service Worker (Production-Grade PWA)
-const CACHE_NAME = 'keyboard-hero-v7';
+const CACHE_NAME = 'keyboard-hero-v8';
 
 const PRECACHE_ROUTES = [
   '/',
@@ -9,6 +9,7 @@ const PRECACHE_ROUTES = [
   '/arcade/redline',
   '/arcade/defuse',
   '/arcade/invaders',
+  '/arcade/hacker',
 ];
 
 const PRECACHE_STATIC_ASSETS = [

@@ -26,7 +26,7 @@ export interface LocalSettingsRecord extends UserSettings {
 
 export interface ArcadeScoreRecord {
   id: string;
-  gameId: 'redline' | 'defuse' | 'invaders';
+  gameId: 'redline' | 'defuse' | 'invaders' | 'hacker';
   difficulty: string;
   score: number;
   wpm: number;
@@ -73,7 +73,7 @@ export async function persistArcadeScore(score: ArcadeScoreRecord): Promise<void
 /**
  * Loads recent arcade high scores.
  */
-  export async function loadArcadeScores(gameId?: 'redline' | 'defuse' | 'invaders'): Promise<ArcadeScoreRecord[]> {
+  export async function loadArcadeScores(gameId?: 'redline' | 'defuse' | 'invaders' | 'hacker'): Promise<ArcadeScoreRecord[]> {
     if (gameId) {
       return await db.arcadeScores.where('gameId').equals(gameId).reverse().sortBy('score');
     }

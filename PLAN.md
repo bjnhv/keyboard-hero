@@ -185,8 +185,19 @@ graph TD
     - Multi-layout support (QWERTY, Dvorak, Colemak, and Hebrew RTL words).
   - High score tracking in IndexedDB (`arcadeScores` with `gameId: 'invaders'`).
   - Fully tested with Vitest unit test suite (`src/stores/__tests__/word-invaders-store.test.ts`).
+- [x] **Mini-Game 4: "Terminal Hacker" (Matrix Cypher Infiltration)**:
+  - Cyberpunk terminal window with Matrix falling rain canvas, glowing phosphor green code display, CRT scanlines, and authentic Linux shell chrome.
+  - Real-world developer typing practice: brackets (`{`, `}`), arrows (`=>`), async/await, JSON payloads, cryptographic buffers, and error handling.
+  - Real-time Security Trace Route meter ($0\%$ to $100\%$):
+    - Passive trace climbs over time; typing code drops trace route.
+    - Danger alarm siren triggers at $\ge 80\%$; reaching $100\%$ triggers ICE lockdown / Game Over.
+    - `[ICE_PICK]` freeze exploit (triggered via `Tab` key) freezes trace route for several seconds.
+  - Synthesized cyber terminal audio engine (`src/core/audio/hacker-audio.ts`) with mechanical key clicks, glitch zaps, exploit chimes, and victory/lockdown fanfares.
+  - 4 Infiltration Tiers: Script Kiddie (basic loops & variables), Cyber Specialist (async/await & APIs), Kernel Hacker (classes & crypto buffers), Ghost Operator (assembly opcodes & regex).
+  - High score tracking in IndexedDB (`arcadeScores` with `gameId: 'hacker'`).
+  - Multi-layout support (QWERTY, Dvorak, Colemak, and Hebrew terminal scripts).
+  - Fully tested with Vitest unit test suite (`src/stores/__tests__/terminal-hacker-store.test.ts`).
 - [ ] **Brainstormed Future Mini-Games**:
-  - [ ] *Terminal Hacker*: Cyber infiltration code-runner keeping security trace route below 100%.
   - [ ] *Rhythm DJ / Beat Match*: Guitar Hero style vertical note highway training cadence and dwell consistency.
   - [ ] *Ghost Drag Race*: 1/4-mile drag duel against your personal best ghost car.
 - [x] **Arcade Storage & Audio**:
