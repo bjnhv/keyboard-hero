@@ -5,12 +5,18 @@ import { KeyDefinition } from '@/types/keyboard';
 import { TypingEngine } from '@/core/engine';
 import {
   CURRICULUM_STAGES,
+  getCurriculumStages,
   getUnlockedKeysUpToStage,
   getWeakestKey,
   updateUserKeyProgress,
   generateAdaptiveLesson,
 } from '@/core/curriculum';
-import { findKeyDefinition, QWERTY_LAYOUT } from '@/core/layouts';
+import {
+  findKeyDefinition,
+  SUPPORTED_LAYOUTS,
+  QWERTY_LAYOUT,
+} from '@/core/layouts';
+import { KeyboardLayoutType } from '@/types/keyboard';
 import { audioSynth } from '@/core/audio/mechanical-synth';
 import { LocalSessionRecord } from '@/types/sync';
 import { UiFontSize } from '@/types/user';
@@ -44,6 +50,8 @@ interface TypingStoreState {
   engine: TypingEngine;
   activeState: ActiveTypingState;
   activeStageId: number;
+  keyboardLayout: KeyboardLayoutType;
+  layoutStages: Partial<Record<KeyboardLayoutType, number>>;
   activeKeys: string[];
   targetFocusKey: string | null;
   physicallyPressedCode: string | null;
@@ -59,6 +67,7 @@ interface TypingStoreState {
 
   // Actions
   loadFromLocalDb: (force?: boolean) => Promise<void>;
+  setLayout: (layout: KeyboardLayoutType) => void;
   initPractice: (stageId?: number) => void;
   handleKeyDown: (key: string, code: string) => void;
   handleKeyUp: (code: string) => void;
@@ -97,6 +106,8 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
     engine,
     activeState,
     activeStageId: initialStage,
+    keyboardLayout: 'qwerty' as KeyboardLayoutType,
+    layoutStages: { qwerty: initialStage },
     activeKeys: initialKeys,
     targetFocusKey: initialFocus,
     physicallyPressedCode: null,
@@ -114,15 +125,61 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
       set({ stageNotification: null });
     },
 
+    setLayout: (layout: KeyboardLayoutType) => {
+      const currentLayoutStages = get().layoutStages;
+      const targetStage = currentLayoutStages[layout] ?? 1;
+      const stages = getCurriculumStages(layout);
+      const safeStage = Math.min(targetStage, stages.length);
+      const keys = getUnlockedKeysUpToStage(safeStage, layout);
+      const focus = getWeakestKey(keys, get().keyProgress) ?? keys[0] ?? (layout === 'hebrew' ? 'כ' : 'f');
+
+      const lesson = generateAdaptiveLesson({
+        stageId: safeStage,
+        activeKeys: keys,
+        targetFocusKey: focus,
+        wordCount: LESSON_WORD_COUNT,
+        mode: 'adaptive',
+      });
+
+      const { engine } = get();
+      engine.loadText(lesson.text);
+      const state = engine.getState();
+      const expectedChar = state.targetText[0] ?? ' ';
+      const layoutDef = SUPPORTED_LAYOUTS[layout] ?? QWERTY_LAYOUT;
+
+      const updatedStages = { ...currentLayoutStages, [layout]: safeStage };
+
+      if (typeof window !== 'undefined') {
+        persistSettings({
+          keyboardLayout: layout,
+          activeStageId: safeStage,
+          layoutStages: updatedStages,
+        }).catch(() => { });
+      }
+
+      set({
+        keyboardLayout: layout,
+        activeStageId: safeStage,
+        layoutStages: updatedStages,
+        activeKeys: keys,
+        targetFocusKey: focus,
+        completedMetrics: null,
+        activeState: state,
+        expectedKeyDef: findKeyDefinition(expectedChar, layoutDef) ?? null,
+      });
+    },
+
     loadFromLocalDb: async (force = false) => {
       if (typeof window === 'undefined' || (get().isLoadedFromDb && !force)) return;
       try {
         const settings = await loadSettings();
         const progressMap = await loadKeyProgressMap();
 
-        const stage = settings.activeStageId || 1;
-        const keys = getUnlockedKeysUpToStage(stage);
-        const focus = getWeakestKey(keys, progressMap) ?? keys[0] ?? 'f';
+        const layout = settings.keyboardLayout ?? 'qwerty';
+        const layoutStages = settings.layoutStages ?? { [layout]: settings.activeStageId || 1 };
+        const stage = layoutStages[layout] ?? settings.activeStageId ?? 1;
+        const keys = getUnlockedKeysUpToStage(stage, layout);
+        const focus = getWeakestKey(keys, progressMap) ?? keys[0] ?? (layout === 'hebrew' ? 'כ' : 'f');
 
         const lesson = generateAdaptiveLesson({
           stageId: stage,
@@ -136,9 +193,12 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
         engine.loadText(lesson.text);
         const state = engine.getState();
         const expectedChar = state.targetText[0] ?? ' ';
+        const layoutDef = SUPPORTED_LAYOUTS[layout] ?? QWERTY_LAYOUT;
 
         set({
           isLoadedFromDb: true,
+          keyboardLayout: layout,
+          layoutStages,
           activeStageId: stage,
           activeKeys: keys,
           targetFocusKey: focus,
@@ -148,7 +208,7 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
           showHandsGuide: settings.showHandsGuide ?? true,
           uiFontSize: settings.uiFontSize ?? 'standard',
           activeState: state,
-          expectedKeyDef: findKeyDefinition(expectedChar, QWERTY_LAYOUT) ?? null,
+          expectedKeyDef: findKeyDefinition(expectedChar, layoutDef) ?? null,
         });
       } catch (err) {
         console.error('Failed to load local DB state:', err);
@@ -157,9 +217,10 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
     },
 
     initPractice: (stageId?: number) => {
+      const layout = get().keyboardLayout;
       const stage = stageId ?? get().activeStageId;
-      const keys = getUnlockedKeysUpToStage(stage);
-      const focus = getWeakestKey(keys, get().keyProgress) ?? keys[0] ?? 'f';
+      const keys = getUnlockedKeysUpToStage(stage, layout);
+      const focus = getWeakestKey(keys, get().keyProgress) ?? keys[0] ?? (layout === 'hebrew' ? 'כ' : 'f');
 
       const lesson = generateAdaptiveLesson({
         stageId: stage,
@@ -173,6 +234,7 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
       engine.loadText(lesson.text);
       const state = engine.getState();
       const expectedChar = state.targetText[0] ?? ' ';
+      const layoutDef = SUPPORTED_LAYOUTS[layout] ?? QWERTY_LAYOUT;
 
       set({
         activeStageId: stage,
@@ -180,12 +242,12 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
         targetFocusKey: focus,
         completedMetrics: null,
         activeState: state,
-        expectedKeyDef: findKeyDefinition(expectedChar, QWERTY_LAYOUT) ?? null,
+        expectedKeyDef: findKeyDefinition(expectedChar, layoutDef) ?? null,
       });
     },
 
     handleKeyDown: (key: string, code: string) => {
-      const { engine, soundEnabled, completedMetrics } = get();
+      const { engine, soundEnabled, completedMetrics, keyboardLayout } = get();
       if (completedMetrics) return;
 
       set({ physicallyPressedCode: code });
@@ -201,9 +263,10 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
         }
       }
 
+      const layoutDef = SUPPORTED_LAYOUTS[keyboardLayout] ?? QWERTY_LAYOUT;
       const newState = engine.getState();
       const nextChar = newState.targetText[newState.currentCharIndex] ?? '';
-      const nextKeyDef = findKeyDefinition(nextChar, QWERTY_LAYOUT) ?? null;
+      const nextKeyDef = findKeyDefinition(nextChar, layoutDef) ?? null;
 
       if (result.isCompleted) {
         // Exercise finished!
@@ -262,21 +325,23 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
     },
 
     restartLesson: () => {
-      const { engine } = get();
+      const { engine, keyboardLayout } = get();
       engine.reset();
       const state = engine.getState();
       const expectedChar = state.targetText[0] ?? ' ';
+      const layoutDef = SUPPORTED_LAYOUTS[keyboardLayout] ?? QWERTY_LAYOUT;
 
       set({
         activeState: state,
         completedMetrics: null,
-        expectedKeyDef: findKeyDefinition(expectedChar, QWERTY_LAYOUT) ?? null,
+        expectedKeyDef: findKeyDefinition(expectedChar, layoutDef) ?? null,
       });
     },
 
     nextLesson: () => {
-      const { activeStageId, keyProgress } = get();
-      const currentStage = CURRICULUM_STAGES.find((s) => s.id === activeStageId);
+      const { activeStageId, keyProgress, keyboardLayout, layoutStages } = get();
+      const stages = getCurriculumStages(keyboardLayout);
+      const currentStage = stages.find((s) => s.id === activeStageId);
 
       let nextStageId = activeStageId;
       let notification: StageNotification | null = null;
@@ -287,147 +352,170 @@ export const useTypingStore = create<TypingStoreState>((set, get) => {
           return !prog || prog.confidence < STAGE_ADVANCEMENT_THRESHOLD;
         });
 
-        if (unmastered.length === 0 && activeStageId < CURRICULUM_STAGES.length) {
-          nextStageId = activeStageId + 1;
-          const nextStageObj = CURRICULUM_STAGES.find((s) => s.id === nextStageId);
-          notification = {
+          if (unmastered.length === 0 && activeStageId < stages.length) {
+            nextStageId = activeStageId + 1;
+            const nextStageObj = stages.find((s) => s.id === nextStageId);
+            notification = {
+              title: `🎉 Stage ${nextStageId} Unlocked!`,
+              message: `Congratulations! You mastered all keys in Stage ${activeStageId}. Now practicing: ${nextStageObj?.name ?? ''}.`,
+              type: 'advance',
+            };
+          } else {
+            const keysNeedingWork = unmastered.map((k) => {
+              const conf = Math.round((keyProgress[k]?.confidence ?? 0) * 100);
+              return `${k.toUpperCase()} (${conf}%)`;
+            });
+            notification = {
+              title: `Stage ${activeStageId} in Progress`,
+              message: `Need ${Math.round(STAGE_ADVANCEMENT_THRESHOLD * 100)}% confidence across all stage keys to unlock Stage ${activeStageId + 1}. Still working on: ${keysNeedingWork.join(', ')}.`,
+              type: 'practice',
+            };
+          }
+        }
+
+        const updatedStages = { ...layoutStages, [keyboardLayout]: nextStageId };
+
+        if (typeof window !== 'undefined' && nextStageId !== activeStageId) {
+          persistSettings({
+            keyboardLayout,
+            activeStageId: nextStageId,
+            layoutStages: updatedStages,
+          }).catch(() => { });
+        }
+
+        set({ layoutStages: updatedStages });
+        get().initPractice(nextStageId);
+        set({ stageNotification: notification });
+      },
+
+      advanceToNextStage: () => {
+        const { activeStageId, keyProgress, keyboardLayout, layoutStages } = get();
+        const stages = getCurriculumStages(keyboardLayout);
+        const currentStage = stages.find((s) => s.id === activeStageId);
+
+        if (!currentStage || activeStageId >= stages.length) return;
+
+        const isMastered = currentStage.keys.every((k) => {
+          const prog = keyProgress[k];
+          return prog && prog.confidence >= STAGE_ADVANCEMENT_THRESHOLD;
+        });
+
+        if (!isMastered) return;
+
+        const nextStageId = activeStageId + 1;
+        const nextStageObj = stages.find((s) => s.id === nextStageId);
+        const updatedStages = { ...layoutStages, [keyboardLayout]: nextStageId };
+
+        if (typeof window !== 'undefined') {
+          persistSettings({
+            keyboardLayout,
+            activeStageId: nextStageId,
+            layoutStages: updatedStages,
+          }).catch(() => { });
+        }
+
+        set({ layoutStages: updatedStages });
+        get().initPractice(nextStageId);
+        set({
+          stageNotification: {
             title: `🎉 Stage ${nextStageId} Unlocked!`,
             message: `Congratulations! You mastered all keys in Stage ${activeStageId}. Now practicing: ${nextStageObj?.name ?? ''}.`,
             type: 'advance',
-          };
-        } else {
-          const keysNeedingWork = unmastered.map((k) => {
-            const conf = Math.round((keyProgress[k]?.confidence ?? 0) * 100);
-            return `${k.toUpperCase()} (${conf}%)`;
-          });
-          notification = {
-            title: `Stage ${activeStageId} in Progress`,
-            message: `Need ${Math.round(STAGE_ADVANCEMENT_THRESHOLD * 100)}% confidence across all stage keys to unlock Stage ${activeStageId + 1}. Still working on: ${keysNeedingWork.join(', ')}.`,
-            type: 'practice',
-          };
-        }
-      }
+          },
+        });
+      },
 
-      if (typeof window !== 'undefined' && nextStageId !== activeStageId) {
-        persistSettings({ activeStageId: nextStageId }).catch(() => {});
-      }
-
-      get().initPractice(nextStageId);
-      set({ stageNotification: notification });
-    },
-
-    advanceToNextStage: () => {
-      const { activeStageId, keyProgress } = get();
-      const currentStage = CURRICULUM_STAGES.find((s) => s.id === activeStageId);
-
-      if (!currentStage || activeStageId >= CURRICULUM_STAGES.length) return;
-
-      const isMastered = currentStage.keys.every((k) => {
-        const prog = keyProgress[k];
-        return prog && prog.confidence >= STAGE_ADVANCEMENT_THRESHOLD;
-      });
-
-      if (!isMastered) return;
-
-      const nextStageId = activeStageId + 1;
-      const nextStageObj = CURRICULUM_STAGES.find((s) => s.id === nextStageId);
-
-      if (typeof window !== 'undefined') {
-        persistSettings({ activeStageId: nextStageId }).catch(() => {});
-      }
-
-      get().initPractice(nextStageId);
-      set({
-        stageNotification: {
-          title: `🎉 Stage ${nextStageId} Unlocked!`,
-          message: `Congratulations! You mastered all keys in Stage ${activeStageId}. Now practicing: ${nextStageObj?.name ?? ''}.`,
-          type: 'advance',
+        practiceNextExercise: () => {
+          get().initPractice(get().activeStageId);
         },
-      });
-    },
 
-    practiceNextExercise: () => {
-      get().initPractice(get().activeStageId);
-    },
+          setStage: (stageId: number) => {
+            const { keyboardLayout, layoutStages } = get();
+            const updatedStages = { ...layoutStages, [keyboardLayout]: stageId };
 
-    setStage: (stageId: number) => {
-      if (typeof window !== 'undefined') {
-        persistSettings({ activeStageId: stageId }).catch(() => {});
-      }
-      get().initPractice(stageId);
-    },
+            if (typeof window !== 'undefined') {
+              persistSettings({
+                keyboardLayout,
+                activeStageId: stageId,
+                layoutStages: updatedStages,
+              }).catch(() => { });
+            }
 
-    toggleSound: () => {
-      const next = !get().soundEnabled;
-      audioSynth.setEnabled(next);
-      if (typeof window !== 'undefined') {
-        persistSettings({ soundEnabled: next }).catch(() => {});
-      }
-      set({ soundEnabled: next });
-    },
+            set({ layoutStages: updatedStages });
+            get().initPractice(stageId);
+          },
 
-    toggleHardcoreMode: () => {
-      const next = !get().hardcoreMode;
-      if (typeof window !== 'undefined') {
-        persistSettings({ hardcoreMode: next }).catch(() => {});
-      }
-      set((s) => ({ hardcoreMode: !s.hardcoreMode }));
-    },
+            toggleSound: () => {
+              const next = !get().soundEnabled;
+              audioSynth.setEnabled(next);
+              if (typeof window !== 'undefined') {
+                persistSettings({ soundEnabled: next }).catch(() => { });
+              }
+              set({ soundEnabled: next });
+            },
 
-    toggleHandsGuide: () => {
-      const next = !get().showHandsGuide;
-      if (typeof window !== 'undefined') {
-        persistSettings({ showHandsGuide: next }).catch(() => {});
-      }
-      set({ showHandsGuide: next });
-    },
+              toggleHardcoreMode: () => {
+                const next = !get().hardcoreMode;
+                if (typeof window !== 'undefined') {
+                  persistSettings({ hardcoreMode: next }).catch(() => { });
+                }
+                set((s) => ({ hardcoreMode: !s.hardcoreMode }));
+              },
 
-    cycleFontSize: () => {
-      const current = get().uiFontSize;
-      const next: UiFontSize =
-        current === 'standard' ? 'large' : current === 'large' ? 'huge' : 'standard';
-      if (typeof window !== 'undefined') {
-        persistSettings({ uiFontSize: next }).catch(() => {});
-      }
-      set({ uiFontSize: next });
-    },
+                toggleHandsGuide: () => {
+                  const next = !get().showHandsGuide;
+                  if (typeof window !== 'undefined') {
+                    persistSettings({ showHandsGuide: next }).catch(() => { });
+                  }
+                  set({ showHandsGuide: next });
+                },
 
-    resetProgress: () => {
-      if (typeof window !== 'undefined') {
-        clearLocalProgress().catch((err) =>
-          console.error('Failed to clear local DB:', err)
-        );
-      }
+                  cycleFontSize: () => {
+                    const current = get().uiFontSize;
+                    const next: UiFontSize =
+                      current === 'standard' ? 'large' : current === 'large' ? 'huge' : 'standard';
+                    if (typeof window !== 'undefined') {
+                      persistSettings({ uiFontSize: next }).catch(() => { });
+                    }
+                    set({ uiFontSize: next });
+                  },
 
-      const stage = 1;
-      const keys = getUnlockedKeysUpToStage(stage);
-      const focus = keys[0] ?? 'f';
+                    resetProgress: () => {
+                      if (typeof window !== 'undefined') {
+                        clearLocalProgress().catch((err) =>
+                          console.error('Failed to clear local DB:', err)
+                        );
+                      }
 
-      const lesson = generateAdaptiveLesson({
-        stageId: stage,
-        activeKeys: keys,
-        targetFocusKey: focus,
-        wordCount: LESSON_WORD_COUNT,
-        mode: 'adaptive',
-      });
+                      const stage = 1;
+                      const keys = getUnlockedKeysUpToStage(stage);
+                      const focus = keys[0] ?? 'f';
 
-      const { engine } = get();
-      engine.loadText(lesson.text);
-      const state = engine.getState();
-      const expectedChar = state.targetText[0] ?? ' ';
+                      const lesson = generateAdaptiveLesson({
+                        stageId: stage,
+                        activeKeys: keys,
+                        targetFocusKey: focus,
+                        wordCount: LESSON_WORD_COUNT,
+                        mode: 'adaptive',
+                      });
 
-      set({
-        activeStageId: stage,
-        activeKeys: keys,
-        targetFocusKey: focus,
-        completedMetrics: null,
-        keyProgress: {},
-        activeState: state,
-        expectedKeyDef: findKeyDefinition(expectedChar, QWERTY_LAYOUT) ?? null,
-      });
-    },
+                      const { engine } = get();
+                      engine.loadText(lesson.text);
+                      const state = engine.getState();
+                      const expectedChar = state.targetText[0] ?? ' ';
+
+                      set({
+                        activeStageId: stage,
+                        activeKeys: keys,
+                        targetFocusKey: focus,
+                        completedMetrics: null,
+                        keyProgress: {},
+                        activeState: state,
+                        expectedKeyDef: findKeyDefinition(expectedChar, QWERTY_LAYOUT) ?? null,
+                      });
+                    },
   };
-});
+  });
 
 if (typeof window !== 'undefined') {
   syncManager.addListener(() => {

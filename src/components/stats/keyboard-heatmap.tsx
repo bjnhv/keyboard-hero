@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { UserKeyProgress } from '@/types/curriculum';
-import { QWERTY_LAYOUT } from '@/core/layouts';
+import { SUPPORTED_LAYOUTS, QWERTY_LAYOUT } from '@/core/layouts';
 import { KeyDefinition } from '@/types/keyboard';
+import { useTypingStore } from '@/stores/use-typing-store';
 
 export type HeatmapMetric = 'confidence' | 'accuracy' | 'speed';
 
@@ -12,6 +13,9 @@ interface KeyboardHeatmapProps {
 }
 
 export const KeyboardHeatmap: React.FC<KeyboardHeatmapProps> = ({ progressMap }) => {
+  const keyboardLayout = useTypingStore((s) => s.keyboardLayout);
+  const currentLayout = SUPPORTED_LAYOUTS[keyboardLayout] ?? QWERTY_LAYOUT;
+
   const [metric, setMetric] = useState<HeatmapMetric>('confidence');
   const [selectedKey, setSelectedKey] = useState<{
     def: KeyDefinition;
@@ -22,7 +26,7 @@ export const KeyboardHeatmap: React.FC<KeyboardHeatmapProps> = ({ progressMap })
    * Calculates color token for a key based on active metric.
    */
   const getKeyColor = (keyChar: string) => {
-    const prog = progressMap[keyChar.toLowerCase()];
+    const prog = progressMap[keyChar.toLowerCase()] ?? progressMap[keyChar];
     if (!prog || prog.totalAttempts === 0) {
       return {
         bg: 'bg-card/40 hover:bg-card/70',
@@ -116,31 +120,28 @@ export const KeyboardHeatmap: React.FC<KeyboardHeatmapProps> = ({ progressMap })
         <div className="inline-flex p-1 bg-secondary/60 rounded-xl border border-border/60 text-xs 3xl:text-sm">
           <button
             onClick={() => setMetric('confidence')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-              metric === 'confidence'
+            className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${metric === 'confidence'
                 ? 'bg-primary text-primary-foreground shadow-xs font-bold'
                 : 'text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             Confidence Score
           </button>
           <button
             onClick={() => setMetric('accuracy')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-              metric === 'accuracy'
+            className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${metric === 'accuracy'
                 ? 'bg-primary text-primary-foreground shadow-xs font-bold'
                 : 'text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             Accuracy %
           </button>
           <button
             onClick={() => setMetric('speed')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-              metric === 'speed'
+            className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${metric === 'speed'
                 ? 'bg-primary text-primary-foreground shadow-xs font-bold'
                 : 'text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             Speed (Dwell ms)
           </button>
@@ -166,56 +167,56 @@ export const KeyboardHeatmap: React.FC<KeyboardHeatmapProps> = ({ progressMap })
       {/* Heatmap Keyboard Grid */}
       <div className="w-full max-w-4xl xl:max-w-5xl 3xl:max-w-6xl 2k:max-w-7xl p-3 sm:p-5 3xl:p-6 2k:p-8 bg-card/60 backdrop-blur-sm rounded-2xl border border-border/80 shadow-xl overflow-x-auto">
         <div className="flex flex-col gap-1.5 3xl:gap-2 min-w-[620px]">
-          {QWERTY_LAYOUT.rows.map((row, rowIndex) => (
-            <div key={rowIndex} className="flex gap-1.5 3xl:gap-2 justify-center">
-              {row.map((keyDef) => {
-                const isSpecial =
-                  keyDef.widthRatio && keyDef.widthRatio > 1.2 && keyDef.key !== ' ';
-                const color = getKeyColor(keyDef.key);
-                const isSelected = selectedKey?.def.code === keyDef.code;
+            {
+              currentLayout.rows.map((row, rowIndex) => (
+                <div key={rowIndex} className="flex gap-1.5 3xl:gap-2 justify-center">
+                  {row.map((keyDef) => {
+                    const isSpecial =
+                      keyDef.widthRatio && keyDef.widthRatio > 1.2 && keyDef.key !== ' ';
+                    const color = getKeyColor(keyDef.key);
+                    const isSelected = selectedKey?.def.code === keyDef.code;
 
-                // Standard letter keys width vs modifiers
-                const flexBasis = keyDef.widthRatio
-                  ? `${keyDef.widthRatio * 2.8}rem`
-                  : '2.8rem';
+                    // Standard letter keys width vs modifiers
+                    const flexBasis = keyDef.widthRatio
+                      ? `${keyDef.widthRatio * 2.8}rem`
+                      : '2.8rem';
 
-                return (
-                  <button
-                    key={keyDef.code}
-                    onClick={() =>
-                      setSelectedKey({
-                        def: keyDef,
-                        prog: progressMap[keyDef.key.toLowerCase()],
-                      })
-                    }
-                    style={{ minWidth: flexBasis }}
-                    className={`h-11 sm:h-12 md:h-13 3xl:h-15 2k:h-18 rounded-lg border transition-all duration-150 flex flex-col items-center justify-between p-1 3xl:p-1.5 select-none cursor-pointer ${
-                      color.bg
-                    } ${color.border} ${
-                      isSelected ? 'ring-2 ring-primary scale-105 z-10 shadow-lg' : ''
-                    }`}
-                  >
-                    <div className="flex items-center justify-between w-full px-0.5">
-                      <span className="text-[11px] sm:text-xs 3xl:text-sm font-semibold leading-none">
-                        {keyDef.display || keyDef.key}
-                      </span>
-                      {keyDef.shiftedKey && (
-                        <span className="text-[9px] 3xl:text-[10px] text-muted-foreground/50 leading-none">
-                          {keyDef.shiftedKey}
-                        </span>
-                      )}
-                    </div>
+                    return (
+                      <button
+                        key={keyDef.code}
+                        onClick={() =>
+                          setSelectedKey({
+                            def: keyDef,
+                            prog: progressMap[keyDef.key.toLowerCase()] ?? progressMap[keyDef.key],
+                          })
+                        }
+                        style={{ minWidth: flexBasis }}
+                        className={`h-11 sm:h-12 md:h-13 3xl:h-15 2k:h-18 rounded-lg border transition-all duration-150 flex flex-col items-center justify-between p-1 3xl:p-1.5 select-none cursor-pointer ${color.bg
+                          } ${color.border} ${isSelected ? 'ring-2 ring-primary scale-105 z-10 shadow-lg' : ''
+                          }`}
+                      >
+                        <div className="flex items-center justify-between w-full px-0.5">
+                          <span className="text-[11px] sm:text-xs 3xl:text-sm font-semibold leading-none">
+                            {keyDef.display || keyDef.key}
+                          </span>
+                          {keyDef.shiftedKey && (
+                            <span className="text-[9px] 3xl:text-[10px] text-muted-foreground/50 leading-none">
+                              {keyDef.shiftedKey}
+                            </span>
+                          )}
+                        </div>
 
-                    {!isSpecial && (
-                      <span className={`text-[9px] 3xl:text-[11px] 2k:text-xs font-mono leading-none ${color.text}`}>
-                        {color.scoreDisplay}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          ))}
+                        {!isSpecial && (
+                          <span className={`text-[9px] 3xl:text-[11px] 2k:text-xs font-mono leading-none ${color.text}`}>
+                            {color.scoreDisplay}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              ))
+            }
         </div>
       </div>
 
@@ -238,8 +239,8 @@ export const KeyboardHeatmap: React.FC<KeyboardHeatmapProps> = ({ progressMap })
               <p className="text-xs text-muted-foreground mt-0.5">
                 {selectedKey.prog
                   ? `Last practiced: ${new Date(
-                      selectedKey.prog.lastPracticedAt
-                    ).toLocaleDateString()}`
+                    selectedKey.prog.lastPracticedAt
+                  ).toLocaleDateString()}`
                   : 'No practice data logged for this key yet.'}
               </p>
             </div>

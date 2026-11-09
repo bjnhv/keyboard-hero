@@ -19,6 +19,7 @@ const PRECACHE_STATIC_ASSETS = [
   '/icons/icon-512.png',
   '/icons/maskable-512.png',
   '/icons/apple-touch-icon.png',
+  '/og-image.png',
   '/sounds/cs/bombpl.wav',
   '/sounds/cs/c4_beep1.wav',
   '/sounds/cs/c4_disarm.wav',

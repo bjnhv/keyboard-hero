@@ -18,7 +18,7 @@ import { VirtualKeyboard } from '@/components/keyboard/virtual-keyboard';
 import { HandsGuide } from '@/components/keyboard/hands-guide';
 import { SessionSummaryModal } from '@/components/typing/session-summary-modal';
 import { useTypingStore } from '@/stores/use-typing-store';
-import { CURRICULUM_STAGES } from '@/core/curriculum';
+import { getCurriculumStages } from '@/core/curriculum';
 import { syncManager } from '@/local-db';
 
 export default function LearnPage() {
@@ -38,8 +38,21 @@ export default function LearnPage() {
   const nextLesson = useTypingStore((s) => s.nextLesson);
   const restartLesson = useTypingStore((s) => s.restartLesson);
   const loadFromLocalDb = useTypingStore((s) => s.loadFromLocalDb);
+  const keyboardLayout = useTypingStore((s) => s.keyboardLayout);
   const stageNotification = useTypingStore((s) => s.stageNotification);
   const dismissStageNotification = useTypingStore((s) => s.dismissStageNotification);
+
+  const bumpKeys =
+    keyboardLayout === 'hebrew'
+      ? ['כ', 'ח']
+      : keyboardLayout === 'dvorak'
+        ? ['U', 'H']
+        : keyboardLayout === 'colemak'
+          ? ['T', 'N']
+          : ['F', 'J'];
+
+  const stages = getCurriculumStages(keyboardLayout);
+  const currentStageObj = stages.find((s) => s.id === activeStageId);
 
   useEffect(() => {
     setIsMounted(true);
@@ -80,89 +93,100 @@ export default function LearnPage() {
   return (
     <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-background text-foreground flex flex-col justify-between px-4 sm:px-6 3xl:px-10 2k:px-14 py-2 sm:py-3 max-w-5xl xl:max-w-6xl 3xl:max-w-7xl 2k:max-w-[1700px] mx-auto w-full">
       {/* Top Navigation Bar */}
-      <AppBar>
-        {/* Hands Guide Toggle Button */}
-        <button
-          onClick={toggleHandsGuide}
-          title={showHandsGuide ? 'Hands Visualizer: ON (Click to hide)' : 'Hands Visualizer: OFF (Click to show)'}
-          className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
-            showHandsGuide
-              ? 'bg-primary/15 text-primary border-primary/40 font-semibold shadow-xs'
-              : 'bg-secondary text-muted-foreground/60 border-border hover:text-foreground'
-          }`}
-        >
-          <Hand className="w-3.5 h-3.5" />
-          <span className="hidden md:inline">Hands</span>
-        </button>
+      <AppBar />
 
-        {/* Sound Toggle Button */}
-        <button
-          onClick={toggleSound}
-          title={soundEnabled ? 'Mechanical Sound: ON' : 'Mechanical Sound: MUTED'}
-          className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
-            soundEnabled
-              ? 'bg-secondary text-foreground border-border hover:bg-secondary/80'
-              : 'bg-secondary/40 text-muted-foreground/50 border-border/40'
-          }`}
-        >
-          {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-emerald-400" /> : <VolumeX className="w-3.5 h-3.5" />}
-          <span className="hidden md:inline">Sound</span>
-        </button>
-
-        {/* Hardcore Mode Toggle Button */}
-        <button
-          onClick={toggleHardcoreMode}
-          title={hardcoreMode ? 'Hardcore Mode: ACTIVE' : 'Hardcore Mode: OFF'}
-          className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
-            hardcoreMode
-              ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-bold'
-              : 'bg-secondary text-muted-foreground/60 border-border hover:text-foreground'
-          }`}
-        >
-          <Flame className={`w-3.5 h-3.5 ${hardcoreMode ? 'text-rose-400' : ''}`} />
-          <span className="hidden md:inline">Hardcore</span>
-        </button>
-
-        <div className="h-4 w-[1px] bg-border/60 mx-0.5 hidden sm:block" />
-
-        {/* Stage Selector */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <label htmlFor="stage-select" className="text-xs text-muted-foreground hidden lg:inline">
+      {/* Dedicated Practice Control Toolbar (Moved below Nav Bar) */}
+      <section className="flex flex-wrap items-center justify-between gap-2.5 py-1.5 px-3 sm:px-4 rounded-xl bg-card/60 border border-border/70 backdrop-blur-sm shrink-0 my-1">
+        {/* Left: Stage Selector & Stage Info */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <label htmlFor="stage-select" className="text-xs font-semibold text-muted-foreground hidden sm:inline">
             Stage:
           </label>
           <select
             id="stage-select"
             value={activeStageId}
             onChange={(e) => setStage(Number(e.target.value))}
-            className="bg-secondary text-foreground text-xs font-semibold py-1.5 px-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+            className="bg-secondary/90 hover:bg-secondary text-foreground text-xs font-semibold py-1.5 px-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
           >
-            {CURRICULUM_STAGES.map((stage) => (
+            {stages.map((stage) => (
               <option key={stage.id} value={stage.id}>
                 Stage {stage.id}: {stage.name}
               </option>
             ))}
           </select>
+
+          {currentStageObj && (
+            <span className="text-[11px] sm:text-xs text-muted-foreground hidden md:inline truncate max-w-[280px] lg:max-w-md">
+              {currentStageObj.description}
+            </span>
+          )}
         </div>
 
-        {/* Reset Progress Button */}
-        <button
-          onClick={() => setShowResetConfirm(true)}
-          title="Reset All Curriculum Progress"
-          className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-rose-500/20 text-muted-foreground hover:text-rose-400 border border-border hover:border-rose-500/40 transition cursor-pointer"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Reset</span>
-        </button>
-      </AppBar>
+        {/* Right: Practice Controls (Hands, Sound, Hardcore, Reset) */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Hands Guide Toggle Button */}
+          <button
+            onClick={toggleHandsGuide}
+            title={showHandsGuide ? 'Hands Visualizer: ON (Click to hide)' : 'Hands Visualizer: OFF (Click to show)'}
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
+              showHandsGuide
+                ? 'bg-primary/15 text-primary border-primary/40 font-semibold shadow-xs'
+                : 'bg-secondary text-muted-foreground/60 border-border hover:text-foreground'
+            }`}
+          >
+            <Hand className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Hands</span>
+          </button>
+
+          {/* Sound Toggle Button */}
+          <button
+            onClick={toggleSound}
+            title={soundEnabled ? 'Mechanical Sound: ON' : 'Mechanical Sound: MUTED'}
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
+              soundEnabled
+                ? 'bg-secondary text-foreground border-border hover:bg-secondary/80'
+                : 'bg-secondary/40 text-muted-foreground/50 border-border/40'
+            }`}
+          >
+            {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-emerald-400" /> : <VolumeX className="w-3.5 h-3.5" />}
+            <span className="hidden sm:inline">Sound</span>
+          </button>
+
+          {/* Hardcore Mode Toggle Button */}
+          <button
+            onClick={toggleHardcoreMode}
+            title={hardcoreMode ? 'Hardcore Mode: ACTIVE' : 'Hardcore Mode: OFF'}
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition cursor-pointer ${
+              hardcoreMode
+                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-bold'
+                : 'bg-secondary text-muted-foreground/60 border-border hover:text-foreground'
+            }`}
+          >
+            <Flame className={`w-3.5 h-3.5 ${hardcoreMode ? 'text-rose-400' : ''}`} />
+            <span className="hidden sm:inline">Hardcore</span>
+          </button>
+
+          <div className="h-4 w-[1px] bg-border/60 mx-0.5 hidden sm:block" />
+
+          {/* Reset Progress Button */}
+          <button
+            onClick={() => setShowResetConfirm(true)}
+            title="Reset All Curriculum Progress"
+            className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-rose-500/20 text-muted-foreground hover:text-rose-400 border border-border hover:border-rose-500/40 transition cursor-pointer"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Reset</span>
+          </button>
+        </div>
+      </section>
 
       {/* Stage Progression Notification Banner */}
       {stageNotification && (
         <div
-          className={`w-full mb-1 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border flex items-center justify-between text-xs transition animate-in fade-in slide-in-from-top-2 shrink-0 ${
-            stageNotification.type === 'advance'
+          className={`w-full mb-1 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border flex items-center justify-between text-xs transition animate-in fade-in slide-in-from-top-2 shrink-0 ${stageNotification.type === 'advance'
               ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
               : 'bg-primary/10 border-primary/25 text-foreground'
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2">
             {stageNotification.type === 'advance' ? (
@@ -203,7 +227,7 @@ export default function LearnPage() {
 
       {/* Footer Info */}
       <footer className="w-full text-center text-[11px] sm:text-xs text-muted-foreground/60 pt-1.5 sm:pt-2 border-t border-border/30 shrink-0">
-        Tip: Keep your index fingers on <span className="font-mono text-primary font-bold">F</span> and <span className="font-mono text-primary font-bold">J</span> tactile bumps. Press <span className="font-mono text-foreground font-semibold">Tab</span> anytime to restart.
+        Tip: Keep your index fingers on <span className="font-mono text-primary font-bold">{bumpKeys[0]}</span> and <span className="font-mono text-primary font-bold">{bumpKeys[1]}</span> tactile bumps. Press <span className="font-mono text-foreground font-semibold">Tab</span> anytime to restart.
       </footer>
 
       {/* Scorecard Modal */}

@@ -193,15 +193,12 @@ graph TD
 ### Phase 11: Multi-Layout & Internationalization Engine (Dvorak, Colemak & Hebrew RTL)
 *Goal: Enable typists to master alternative English ergonomic layouts (Dvorak, Colemak) and international non-Latin layouts (Hebrew standard SI-1452 with full Right-to-Left RTL text rendering).*
 
-- [ ] **Ergonomic English Layouts (Dvorak & Colemak)**:
+- [x] **Ergonomic English Layouts (Dvorak)**:
   - **Dvorak Matrix (`src/core/layouts/dvorak.ts`)**:
     - Complete Dvorak key mapping, finger assignments, and homing bumps on keys `U` (`KeyF`) and `H` (`KeyJ`).
-    - Dvorak-specific curriculum progression ladder (Stages starting with Home row vowels/anchors: `a`, `o`, `e`, `u`, `i`, `d`, `h`, `t`, `n`, `s`).
-  - **Colemak Matrix (`src/core/layouts/colemak.ts`)**:
-    - Colemak key mapping, finger assignments, and homing bumps on `T` (`KeyF`) and `N` (`KeyJ`).
-    - Colemak-specific curriculum progression ladder.
+    - Dvorak-specific curriculum progression ladder (Stages starting with Home row vowels/anchors: `u`, `h`, `e`, `t`, `a`, `o`, `i`, `d`, `n`, `s`).
 
-- [ ] **Hebrew Language & Right-to-Left (RTL) Layout Engine**:
+- [x] **Hebrew Language & Right-to-Left (RTL) Layout Engine**:
   - **Hebrew Standard Matrix (`src/core/layouts/hebrew.ts`)**:
     - Standard Israeli SI-1452 keyboard mapping.
     - Homing tactile anchor keys on `כ` (physical `KeyF`) and `ח` (physical `KeyJ`).
@@ -209,15 +206,16 @@ graph TD
   - **RTL Typing Engine & Canvas Integration**:
     - Dynamic bi-directional layout support: text direction switches to `dir="rtl"` when Hebrew layout is active.
     - Caret positioning, smooth cursor translation, and character diffing aligned right-to-left.
-    - Hebrew pseudo-word / n-gram generator producing pronounceable Hebrew syllables and words using unlocked letters.
+    - Hebrew pseudo-word / syllable generator respecting root structures, vowel matres lectionis (`א`, `ו`, `י`, `ה`, `ע`), and sofiot rules.
   - **Hebrew Curriculum Progression Ladder**:
     - Stage 1: Home row anchors (`כ`, `ח`, `ג`, `י`).
-    - Stage 2: Full home row (`ש`, `ד`, `ע`, `ל`, `ף`, `,`).
-    - Stage 3: Top row reaches (`ק`, `ר`, `א`, `ט`, `ו`, `ן`, `ם`, `פ`).
-    - Stage 4: Bottom row reaches (`ז`, `ס`, `ב`, `ה`, `נ`, `מ`, `צ`, `ת`, `ץ`).
-    - Stage 5: Final letter mastery and Hebrew punctuation (`.`, `,`, `'`, `/`, `;`).
+    - Stage 2: Full home row (`ש`, `ד`, `ע`, `ל`, `ף`, `ך`, `,`).
+    - Stage 3: Top row reaches (`א`, `ו`, `ר`, `ק`, `ט`, `פ`, `ן`, `ם`).
+    - Stage 4: Bottom row reaches (`ב`, `נ`, `מ`, `ה`, `צ`, `ת`, `ז`, `ס`, `ץ`, `.`).
+    - Stage 5: Final letter mastery and Hebrew punctuation (`'`, `/`, `;`, `-`, `?`).
+    - Stage 6: Number row and shifted symbols.
 
-- [ ] **Interactive Layout Switcher & State Management**:
+- [x] **Interactive Layout Switcher & State Management**:
   - Top navigation bar layout selector dropdown (`QWERTY`, `Dvorak`, `Colemak`, `עברית / Hebrew`).
   - Real-time visual keyboard switching: SVG keycaps dynamically display the active layout's character set and shifted symbols.
   - Transparent hands guide and finger pills dynamically highlight the correct physical finger based on the active layout.

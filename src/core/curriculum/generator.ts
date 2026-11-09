@@ -1,10 +1,26 @@
 import { GeneratedLesson, LessonConfig } from '@/types/curriculum';
 
-const VOWELS = new Set(['a', 'e', 'i', 'o', 'u']);
-const PUNCTUATION = new Set(['.', ',', "'", '?', '!', ';', ':']);
+const LATIN_VOWELS = new Set(['a', 'e', 'i', 'o', 'u']);
+const HEBREW_VOWELS = new Set(['א', 'ו', 'י', 'ה', 'ע']);
+const PUNCTUATION = new Set(['.', ',', "'", '?', '!', ';', ':', '-', '/']);
+const HEBREW_SOFIOT = new Set(['ך', 'ם', 'ן', 'ף', 'ץ']);
+
+// Curated authentic Hebrew words matching progressive curriculum stages
+const HEBREW_WORDS: string[] = [
+  // Stage 1 & 2 (Home row letters: כ, ח, ג, י, ש, ד, ע, ל, ף, ך)
+  'חג', 'גג', 'חגי', 'גיח', 'יחי', 'של', 'דג', 'עד', 'שד', 'ילד', 'דרך', 'עיר', 'כד', 'עף', 'שף',
+  'לך', 'כך', 'גיל', 'שיח', 'חלל', 'שלך', 'שלי', 'גלי', 'דיג', 'כל', 'כלי', 'לי', 'לו', 'לה', 'שלו', 'שלה',
+  // Stage 3 (+ א, ו, ר, ק, ט, פ, ן, ם)
+  'אור', 'יום', 'שיר', 'רוח', 'קול', 'טוב', 'פרח', 'ראש', 'מים', 'שלום', 'חלום', 'שקט', 'ארץ', 'אדם',
+  'זמן', 'בוקר', 'ערב', 'בית', 'ספר', 'עץ', 'שמש', 'כוכב', 'עולם', 'חיים', 'אהבה', 'תודה', 'חבר', 'מלך',
+  // Stage 4 (+ ב, נ, מ, ה, צ, ת, ז, ס, ץ)
+  'צעד', 'מקום', 'שנה', 'חודש', 'שבוע', 'מחר', 'היום', 'אמת', 'צדק', 'שמחה', 'לב', 'דרך', 'זהב', 'כסף',
+  'מחשב', 'מסך', 'מקלדת', 'עבודה', 'מבחן', 'הצלחה', 'חופש', 'שבת', 'שלום'
+];
 
 /**
  * Generates an adaptive lesson text tailored to the user's unlocked keys and weakest finger.
+ * Fully supports Latin layouts (QWERTY, Dvorak, Colemak) and Hebrew RTL text flow.
  */
 export function generateAdaptiveLesson(config: LessonConfig): GeneratedLesson {
   const { stageId, activeKeys, targetFocusKey, wordCount, mode } = config;
@@ -12,18 +28,23 @@ export function generateAdaptiveLesson(config: LessonConfig): GeneratedLesson {
   const focusKeys: string[] = targetFocusKey ? [targetFocusKey] : [];
   const activeKeySet = new Set(activeKeys);
 
+  const isHebrew = activeKeys.some((k) => /[\u0590-\u05FF]/.test(k));
+
+  if (isHebrew) {
+    return generateHebrewLesson(config, activeKeySet);
+  }
+
   const availableVowels = activeKeys.filter(
-    (k) => VOWELS.has(k.toLowerCase()) && /^[a-z]$/i.test(k)
+      (k) => LATIN_VOWELS.has(k.toLowerCase()) && /^[a-z]$/i.test(k)
   );
   const availableConsonants = activeKeys.filter(
-    (k) => !VOWELS.has(k.toLowerCase()) && /^[a-z]$/i.test(k)
+      (k) => !LATIN_VOWELS.has(k.toLowerCase()) && /^[a-z]$/i.test(k)
   );
 
   const hasVowels = availableVowels.length > 0;
   const hasConsonants = availableConsonants.length > 0;
 
   for (let i = 0; i < wordCount; i++) {
-    // 75% of words should feature the target focus key if provided
     const shouldIncludeFocus =
       targetFocusKey && (i % 4 !== 0 || activeKeys.length <= 4);
 
@@ -36,14 +57,12 @@ export function generateAdaptiveLesson(config: LessonConfig): GeneratedLesson {
         activeKeySet
       );
     } else {
-      // Early stages (e.g. Stage 1: f, j, d, k) without vowels: generate rhythmic patterns
       word = generatePatternWord(
         activeKeys,
         shouldIncludeFocus ? targetFocusKey : undefined
       );
     }
 
-    // Guarantee that every single character in the word strictly belongs to activeKeys
     const sanitizedWord = Array.from(word)
       .filter((ch) => activeKeySet.has(ch))
       .join('');
@@ -65,8 +84,95 @@ export function generateAdaptiveLesson(config: LessonConfig): GeneratedLesson {
 }
 
 /**
- * Builds a pronounceable pseudo-word using alternating consonants and vowels (CVC, CV, VC, CVCV),
- * with natural handling for punctuation, numbers, brackets, and symbols.
+ * Generates an authentic Hebrew lesson, respecting Hebrew syllabic structures,
+ * final letter (*sofiot*) positioning, and unlocked letters.
+ */
+function generateHebrewLesson(
+  config: LessonConfig,
+  activeKeySet: Set<string>
+): GeneratedLesson {
+  const { stageId, activeKeys, targetFocusKey, wordCount, mode } = config;
+  const words: string[] = [];
+  const focusKeys: string[] = targetFocusKey ? [targetFocusKey] : [];
+
+  // Filter dictionary words that can be spelled using strictly unlocked keys
+  const validDictWords = HEBREW_WORDS.filter((word) =>
+    Array.from(word).every((char) => activeKeySet.has(char))
+  );
+
+  const lettersOnly = activeKeys.filter((k) => /[\u0590-\u05FF]/.test(k));
+  const availableVowels = lettersOnly.filter((k) => HEBREW_VOWELS.has(k));
+  const availableConsonants = lettersOnly.filter(
+    (k) => !HEBREW_VOWELS.has(k) && !HEBREW_SOFIOT.has(k)
+  );
+  const availableSofiot = lettersOnly.filter((k) => HEBREW_SOFIOT.has(k));
+
+  for (let i = 0; i < wordCount; i++) {
+    const shouldIncludeFocus =
+      targetFocusKey && (i % 4 !== 0 || activeKeys.length <= 4);
+
+    // Try finding a matching dictionary word with focusKey first
+    const focusDictWords = shouldIncludeFocus
+      ? validDictWords.filter((w) => w.includes(targetFocusKey!))
+      : validDictWords;
+
+    if (focusDictWords.length > 0 && Math.random() < 0.7) {
+      const picked = focusDictWords[Math.floor(Math.random() * focusDictWords.length)];
+      words.push(picked);
+      continue;
+    }
+
+    // Synthesize natural Hebrew syllable
+    let synthesized = '';
+    const length = Math.floor(Math.random() * 2) + 2; // 2 or 3 letters
+
+    for (let pos = 0; pos < length; pos++) {
+      const isEnd = pos === length - 1;
+
+      if (isEnd && availableSofiot.length > 0 && Math.random() < 0.35) {
+        synthesized += availableSofiot[Math.floor(Math.random() * availableSofiot.length)];
+      } else if (availableVowels.length > 0 && (pos === 1 || Math.random() < 0.4)) {
+        synthesized += availableVowels[Math.floor(Math.random() * availableVowels.length)];
+      } else if (availableConsonants.length > 0) {
+        synthesized += availableConsonants[Math.floor(Math.random() * availableConsonants.length)];
+      } else {
+        synthesized += lettersOnly[Math.floor(Math.random() * lettersOnly.length)] || 'כ';
+      }
+    }
+
+    // Ensure focus key inclusion if needed
+    if (shouldIncludeFocus && !synthesized.includes(targetFocusKey!)) {
+      if (HEBREW_SOFIOT.has(targetFocusKey!)) {
+        synthesized = synthesized.slice(0, -1) + targetFocusKey;
+      } else if (PUNCTUATION.has(targetFocusKey!)) {
+        synthesized = synthesized + targetFocusKey;
+      } else {
+        synthesized = targetFocusKey + synthesized.slice(1);
+      }
+    }
+
+    const sanitized = Array.from(synthesized)
+      .filter((ch) => activeKeySet.has(ch))
+      .join('');
+
+    words.push(sanitized.length > 0 ? sanitized : lettersOnly[0] || 'כ');
+  }
+
+  const text = words.join(' ');
+  const id = `hebrew-lesson-${stageId}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+  return {
+    id,
+    text,
+    words,
+    focusKeys,
+    stageId,
+    mode,
+  };
+}
+
+/**
+ * Builds a pronounceable pseudo-word using alternating consonants and vowels (CVC, CV, VC, CVCV).
  */
 function generatePronounceableWord(
   vowels: string[],
@@ -74,7 +180,6 @@ function generatePronounceableWord(
   focusKey?: string,
   activeKeySet?: Set<string>
 ): string {
-  // Target length: 3 to 6 characters
   const patterns = ['CVC', 'VC', 'CV', 'CVCV', 'VCV', 'CVCC'];
   const pattern = patterns[Math.floor(Math.random() * patterns.length)];
 
@@ -88,10 +193,8 @@ function generatePronounceableWord(
     }
   }
 
-  // Ensure focus key is present if requested
   if (focusKey && !chars.includes(focusKey)) {
     if (PUNCTUATION.has(focusKey)) {
-      // Natural trailing punctuation for sentences/drills
       chars.push(focusKey);
     } else if (focusKey === '(' && activeKeySet?.has(')')) {
       chars.unshift('(');
@@ -103,14 +206,13 @@ function generatePronounceableWord(
       chars.unshift('{');
       chars.push('}');
     } else if (/^[0-9]$/.test(focusKey)) {
-      // Numbers can attach as identifier or suffix (e.g. word1)
       chars.push(focusKey);
     } else {
-      const isVowel = VOWELS.has(focusKey.toLowerCase());
+      const isVowel = LATIN_VOWELS.has(focusKey.toLowerCase());
       const candidates = chars
         .map((ch, idx) => ({ ch, idx }))
         .filter(({ ch }) =>
-          isVowel ? VOWELS.has(ch.toLowerCase()) : !VOWELS.has(ch.toLowerCase())
+          isVowel ? LATIN_VOWELS.has(ch.toLowerCase()) : !LATIN_VOWELS.has(ch.toLowerCase())
         );
 
       if (candidates.length > 0) {
@@ -144,4 +246,3 @@ function generatePatternWord(activeKeys: string[], focusKey?: string): string {
 
   return chars.join('');
 }
-

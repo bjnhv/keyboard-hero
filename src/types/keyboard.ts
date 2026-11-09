@@ -2,7 +2,7 @@
  * Keyboard Layout, Finger Mappings & Visualizer Interfaces
  */
 
-export type KeyboardLayoutType = 'qwerty' | 'colemak' | 'dvorak' | 'workman';
+export type KeyboardLayoutType = 'qwerty' | 'colemak' | 'dvorak' | 'workman' | 'hebrew';
 
 export type FingerType =
   | 'left-pinky'
@@ -37,7 +37,9 @@ export interface KeyDefinition {
 export interface KeyboardLayout {
   id: KeyboardLayoutType;
   name: string;
+  nativeName?: string;
   description: string;
+  direction?: 'ltr' | 'rtl';
   rows: KeyDefinition[][];
 }
 

@@ -2,11 +2,13 @@
 
 import React, { useRef, useEffect } from 'react';
 import { useTypingStore } from '@/stores/use-typing-store';
+import { SUPPORTED_LAYOUTS } from '@/core/layouts';
 import { RotateCcw, Volume2, VolumeX, Eye, EyeOff, Sparkles, Type } from 'lucide-react';
 
 export const TypingCanvas: React.FC = () => {
   const activeState = useTypingStore((s) => s.activeState);
   const activeStageId = useTypingStore((s) => s.activeStageId);
+  const keyboardLayout = useTypingStore((s) => s.keyboardLayout);
   const targetFocusKey = useTypingStore((s) => s.targetFocusKey);
   const soundEnabled = useTypingStore((s) => s.soundEnabled);
   const hardcoreMode = useTypingStore((s) => s.hardcoreMode);
@@ -17,6 +19,8 @@ export const TypingCanvas: React.FC = () => {
   const restartLesson = useTypingStore((s) => s.restartLesson);
   const toggleSound = useTypingStore((s) => s.toggleSound);
   const toggleHardcoreMode = useTypingStore((s) => s.toggleHardcoreMode);
+
+  const isRtl = (SUPPORTED_LAYOUTS[keyboardLayout])?.direction === 'rtl';
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -51,8 +55,8 @@ export const TypingCanvas: React.FC = () => {
     uiFontSize === 'huge'
       ? 'text-3xl sm:text-4xl md:text-5xl 3xl:text-6xl'
       : uiFontSize === 'large'
-      ? 'text-2xl sm:text-3xl md:text-4xl 3xl:text-5xl'
-      : 'text-xl sm:text-2xl md:text-3xl 3xl:text-4xl';
+        ? 'text-2xl sm:text-3xl md:text-4xl 3xl:text-5xl'
+        : 'text-xl sm:text-2xl md:text-3xl 3xl:text-4xl';
 
   return (
     <div
@@ -145,11 +149,10 @@ export const TypingCanvas: React.FC = () => {
               inputRef.current?.focus();
             }}
             title={hardcoreMode ? 'Exit Hardcore Mode' : 'Enter Hardcore Mode (Hide Keyboard)'}
-            className={`p-1.5 sm:p-2 rounded-lg transition border border-border cursor-pointer ${
-              hardcoreMode
+            className={`p-1.5 sm:p-2 rounded-lg transition border border-border cursor-pointer ${hardcoreMode
                 ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
                 : 'bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             {hardcoreMode ? (
               <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-400" />
@@ -173,36 +176,47 @@ export const TypingCanvas: React.FC = () => {
       </div>
 
       {/* Main Text Display Canvas */}
-      <div className="p-3.5 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl bg-card border border-border/80 shadow-lg min-h-[90px] sm:min-h-[110px] md:min-h-[125px] flex items-center justify-center">
-        <div className={`font-mono ${fontClass} tracking-wider leading-relaxed text-left flex flex-wrap`}>
-          {targetText.split('').map((char, index) => {
-            const isTyped = index < currentCharIndex;
-            const isCurrent = index === currentCharIndex;
-            const isUpcoming = index > currentCharIndex;
+          <div
+            dir={isRtl ? 'rtl' : 'ltr'}
+            className="p-3.5 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl bg-card border border-border/80 shadow-lg min-h-[90px] sm:min-h-[110px] md:min-h-[125px] flex items-center justify-center"
+          >
+            <div
+              dir={isRtl ? 'rtl' : 'ltr'}
+              className={`font-mono ${fontClass} tracking-wider leading-relaxed ${isRtl ? 'text-right' : 'text-left'
+                } flex flex-wrap`}
+            >
+              {targetText.split('').map((char, index) => {
+                const isTyped = index < currentCharIndex;
+                const isCurrent = index === currentCharIndex;
+                const isUpcoming = index > currentCharIndex;
 
-            let charColor = 'text-muted-foreground/40';
-            if (isTyped) {
-              charColor = 'text-foreground font-semibold';
-            } else if (isCurrent) {
-              charColor = 'text-primary bg-primary/20 rounded px-0.5 animate-pulse ring-2 ring-primary/30';
-            }
+                let charColor = 'text-muted-foreground/40';
+                if (isTyped) {
+                  charColor = 'text-foreground font-semibold';
+                } else if (isCurrent) {
+                  charColor = 'text-primary bg-primary/20 rounded px-0.5 animate-pulse ring-2 ring-primary/30';
+                }
 
-            return (
-              <span
-                key={index}
-                className={`relative inline-block transition-colors duration-75 ${charColor}`}
-              >
-                {char === ' ' ? '\u00A0' : char}
-                {/* Active Caret Line */}
-                {isCurrent && (
-                  <span className="absolute -left-[1px] top-1 bottom-1 w-0.5 bg-primary animate-pulse" />
-                )}
-              </span>
-            );
-          })}
+                return (
+                  <span
+                    key={index}
+                    className={`relative inline-block transition-colors duration-75 ${charColor}`}
+                  >
+                    {char === ' ' ? '\u00A0' : char}
+                    {/* Active Caret Line */}
+                    {isCurrent && (
+                  <span
+                    className={`absolute ${
+                      isRtl ? '-right-[1px]' : '-left-[1px]'
+                    } top-1 bottom-1 w-0.5 bg-primary animate-pulse`}
+                  />
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  );
+        );
 };
 

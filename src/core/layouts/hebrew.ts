@@ -1,0 +1,85 @@
+import { KeyboardLayout } from '@/types/keyboard';
+
+export const HEBREW_LAYOUT: KeyboardLayout = {
+  id: 'hebrew',
+  name: 'Hebrew',
+  nativeName: 'עברית',
+  description: 'Standard Israeli SI-1452 keyboard layout with Right-to-Left (RTL) text flow',
+  direction: 'rtl',
+  rows: [
+    // Row 0: Number & Symbol Row
+    [
+      { key: ';', shiftedKey: '~', display: ';', code: 'Backquote', finger: 'left-pinky', row: 0 },
+      { key: '1', shiftedKey: '!', display: '1', code: 'Digit1', finger: 'left-pinky', row: 0 },
+      { key: '2', shiftedKey: '@', display: '2', code: 'Digit2', finger: 'left-ring', row: 0 },
+      { key: '3', shiftedKey: '#', display: '3', code: 'Digit3', finger: 'left-middle', row: 0 },
+      { key: '4', shiftedKey: '$', display: '4', code: 'Digit4', finger: 'left-index', row: 0 },
+      { key: '5', shiftedKey: '%', display: '5', code: 'Digit5', finger: 'left-index', row: 0 },
+      { key: '6', shiftedKey: '^', display: '6', code: 'Digit6', finger: 'right-index', row: 0 },
+      { key: '7', shiftedKey: '&', display: '7', code: 'Digit7', finger: 'right-index', row: 0 },
+      { key: '8', shiftedKey: '*', display: '8', code: 'Digit8', finger: 'right-middle', row: 0 },
+      { key: '9', shiftedKey: ')', display: '9', code: 'Digit9', finger: 'right-ring', row: 0 },
+      { key: '0', shiftedKey: '(', display: '0', code: 'Digit0', finger: 'right-pinky', row: 0 },
+      { key: '-', shiftedKey: '_', display: '-', code: 'Minus', finger: 'right-pinky', row: 0 },
+      { key: '=', shiftedKey: '+', display: '=', code: 'Equal', finger: 'right-pinky', row: 0 },
+      { key: 'Backspace', display: '⌫', code: 'Backspace', finger: 'right-pinky', row: 0, widthRatio: 2.0 },
+    ],
+    // Row 1: Top Row
+    [
+      { key: 'Tab', display: 'Tab', code: 'Tab', finger: 'left-pinky', row: 1, widthRatio: 1.5 },
+      { key: '/', shiftedKey: 'Q', display: '/', code: 'KeyQ', finger: 'left-pinky', row: 1 },
+      { key: "'", shiftedKey: 'W', display: "'", code: 'KeyW', finger: 'left-ring', row: 1 },
+      { key: 'ק', shiftedKey: 'E', display: 'ק', code: 'KeyE', finger: 'left-middle', row: 1 },
+      { key: 'ר', shiftedKey: 'R', display: 'ר', code: 'KeyR', finger: 'left-index', row: 1 },
+      { key: 'א', shiftedKey: 'T', display: 'א', code: 'KeyT', finger: 'left-index', row: 1 },
+      { key: 'ט', shiftedKey: 'Y', display: 'ט', code: 'KeyY', finger: 'right-index', row: 1 },
+      { key: 'ו', shiftedKey: 'U', display: 'ו', code: 'KeyU', finger: 'right-index', row: 1 },
+      { key: 'ן', shiftedKey: 'I', display: 'ן', code: 'KeyI', finger: 'right-middle', row: 1 },
+      { key: 'ם', shiftedKey: 'O', display: 'ם', code: 'KeyO', finger: 'right-ring', row: 1 },
+      { key: 'פ', shiftedKey: 'P', display: 'פ', code: 'KeyP', finger: 'right-pinky', row: 1 },
+      { key: ']', shiftedKey: '}', display: ']', code: 'BracketLeft', finger: 'right-pinky', row: 1 },
+      { key: '[', shiftedKey: '{', display: '[', code: 'BracketRight', finger: 'right-pinky', row: 1 },
+      { key: '\\', shiftedKey: '|', display: '\\', code: 'Backslash', finger: 'right-pinky', row: 1, widthRatio: 1.5 },
+    ],
+    // Row 2: Home Row
+    [
+      { key: 'CapsLock', display: 'Caps', code: 'CapsLock', finger: 'left-pinky', row: 2, widthRatio: 1.75 },
+      { key: 'ש', shiftedKey: 'A', display: 'ש', code: 'KeyA', finger: 'left-pinky', row: 2 },
+      { key: 'ד', shiftedKey: 'S', display: 'ד', code: 'KeyS', finger: 'left-ring', row: 2 },
+      { key: 'ג', shiftedKey: 'D', display: 'ג', code: 'KeyD', finger: 'left-middle', row: 2 },
+      { key: 'כ', shiftedKey: 'F', display: 'כ', code: 'KeyF', finger: 'left-index', row: 2, hasHomingBump: true },
+      { key: 'ע', shiftedKey: 'G', display: 'ע', code: 'KeyG', finger: 'left-index', row: 2 },
+      { key: 'י', shiftedKey: 'H', display: 'י', code: 'KeyH', finger: 'right-index', row: 2 },
+      { key: 'ח', shiftedKey: 'J', display: 'ח', code: 'KeyJ', finger: 'right-index', row: 2, hasHomingBump: true },
+      { key: 'ל', shiftedKey: 'K', display: 'ל', code: 'KeyK', finger: 'right-middle', row: 2 },
+      { key: 'ך', shiftedKey: 'L', display: 'ך', code: 'KeyL', finger: 'right-ring', row: 2 },
+      { key: 'ף', shiftedKey: ':', display: 'ף', code: 'Semicolon', finger: 'right-pinky', row: 2 },
+      { key: ',', shiftedKey: '"', display: ',', code: 'Quote', finger: 'right-pinky', row: 2 },
+      { key: 'Enter', display: 'Enter', code: 'Enter', finger: 'right-pinky', row: 2, widthRatio: 2.25 },
+    ],
+    // Row 3: Bottom Row
+    [
+      { key: 'ShiftLeft', display: 'Shift', code: 'ShiftLeft', finger: 'left-pinky', row: 3, widthRatio: 2.25 },
+      { key: 'ז', shiftedKey: 'Z', display: 'ז', code: 'KeyZ', finger: 'left-pinky', row: 3 },
+      { key: 'ס', shiftedKey: 'X', display: 'ס', code: 'KeyX', finger: 'left-ring', row: 3 },
+      { key: 'ב', shiftedKey: 'C', display: 'ב', code: 'KeyC', finger: 'left-middle', row: 3 },
+      { key: 'ה', shiftedKey: 'V', display: 'ה', code: 'KeyV', finger: 'left-index', row: 3 },
+      { key: 'נ', shiftedKey: 'B', display: 'נ', code: 'KeyB', finger: 'left-index', row: 3 },
+      { key: 'מ', shiftedKey: 'N', display: 'מ', code: 'KeyN', finger: 'right-index', row: 3 },
+      { key: 'צ', shiftedKey: 'M', display: 'צ', code: 'KeyM', finger: 'right-index', row: 3 },
+      { key: 'ת', shiftedKey: '>', display: 'ת', code: 'Comma', finger: 'right-middle', row: 3 },
+      { key: 'ץ', shiftedKey: '<', display: 'ץ', code: 'Period', finger: 'right-ring', row: 3 },
+      { key: '.', shiftedKey: '?', display: '.', code: 'Slash', finger: 'right-pinky', row: 3 },
+      { key: 'ShiftRight', display: 'Shift', code: 'ShiftRight', finger: 'right-pinky', row: 3, widthRatio: 2.75 },
+    ],
+    // Row 4: Space Row
+    [
+      { key: 'ControlLeft', display: 'Ctrl', code: 'ControlLeft', finger: 'left-pinky', row: 4, widthRatio: 1.5 },
+      { key: 'AltLeft', display: 'Alt', code: 'AltLeft', finger: 'thumb', row: 4, widthRatio: 1.25 },
+      { key: ' ', display: 'Space', code: 'Space', finger: 'thumb', row: 4, widthRatio: 6.25 },
+      { key: 'AltRight', display: 'Alt', code: 'AltRight', finger: 'thumb', row: 4, widthRatio: 1.25 },
+      { key: 'ControlRight', display: 'Ctrl', code: 'ControlRight', finger: 'right-pinky', row: 4, widthRatio: 1.5 },
+    ],
+  ],
+};
+

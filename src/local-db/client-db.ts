@@ -20,6 +20,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 export interface LocalSettingsRecord extends UserSettings {
   id: string; // 'current'
   activeStageId: number;
+  layoutStages?: Partial<Record<UserSettings['keyboardLayout'], number>>;
 }
 
 export interface ArcadeScoreRecord {

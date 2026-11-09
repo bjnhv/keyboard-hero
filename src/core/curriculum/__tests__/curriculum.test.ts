@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import {
   CURRICULUM_STAGES,
+  DVORAK_STAGES,
+  COLEMAK_STAGES,
+  HEBREW_STAGES,
+  getCurriculumStages,
   getUnlockedKeysUpToStage,
 } from '../stages';
 import {
@@ -21,6 +25,17 @@ describe('Curriculum Stages', () => {
     expect(CURRICULUM_STAGES[8].keys).toContain('!');
   });
 
+  it('provides distinct curriculum stages for Dvorak, Colemak, and Hebrew', () => {
+    const dvorakStages = getCurriculumStages('dvorak');
+    expect(dvorakStages[0].keys).toEqual(['u', 'h', 'e', 't']);
+
+    const colemakStages = getCurriculumStages('colemak');
+    expect(colemakStages[0].keys).toEqual(['t', 'n', 's', 'e']);
+
+    const hebrewStages = getCurriculumStages('hebrew');
+    expect(hebrewStages[0].keys).toEqual(['כ', 'ח', 'ג', 'י']);
+  });
+
   it('aggregates unlocked keys cumulatively up to stage', () => {
     const stage1Keys = getUnlockedKeysUpToStage(1);
     expect(stage1Keys).toEqual(['f', 'j', 'd', 'k']);
@@ -29,6 +44,9 @@ describe('Curriculum Stages', () => {
     expect(stage2Keys).toContain('f');
     expect(stage2Keys).toContain('s');
     expect(stage2Keys.length).toBe(stage1Keys.length + CURRICULUM_STAGES[1].keys.length);
+
+    const hebrewStage1Keys = getUnlockedKeysUpToStage(1, 'hebrew');
+    expect(hebrewStage1Keys).toEqual(['כ', 'ח', 'ג', 'י']);
   });
 });
 
@@ -106,6 +124,27 @@ describe('Adaptive Lesson Generator', () => {
         expect(activeKeys).toContain(char);
       }
     }
+  });
+
+  it('generates authentic Hebrew words and lessons with unlocked Hebrew keys', () => {
+    const hebrewKeys = getUnlockedKeysUpToStage(2, 'hebrew');
+    const lesson = generateAdaptiveLesson({
+      stageId: 2,
+      activeKeys: hebrewKeys,
+      targetFocusKey: 'כ',
+      wordCount: 10,
+      mode: 'adaptive',
+    });
+
+    expect(lesson.words).toHaveLength(10);
+    // Every character must be an unlocked Hebrew key
+    for (const word of lesson.words) {
+      for (const char of word) {
+        expect(hebrewKeys).toContain(char);
+      }
+    }
+    // Target focus key should appear
+    expect(lesson.words.some((w) => w.includes('כ'))).toBe(true);
   });
 
   it('generates pronounceable words when vowels are unlocked', () => {

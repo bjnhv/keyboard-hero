@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { ArrowLeft, Keyboard, Sparkles, Gamepad2, LucideIcon } from 'lucide-react';
 import { AccountButton } from '@/components/auth';
 import { InstallAppButton } from '@/components/pwa';
+import { LayoutSelector } from './layout-selector';
 
 export interface AppBarProps {
   children?: React.ReactNode;
@@ -124,6 +125,7 @@ export const AppBar: React.FC<AppBarProps> = ({
 
       {/* Right Toolbar / Actions & Account Controls */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0 ml-auto">
+        <LayoutSelector />
         <InstallAppButton />
         {children}
         <AccountButton />

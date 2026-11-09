@@ -1,11 +1,21 @@
-import { FingerType, KeyboardLayout, KeyDefinition } from '@/types/keyboard';
+import { FingerType, KeyboardLayout, KeyboardLayoutType, KeyDefinition } from '@/types/keyboard';
 import { QWERTY_LAYOUT } from './qwerty';
+import { DVORAK_LAYOUT } from './dvorak';
+import { COLEMAK_LAYOUT } from './colemak';
+import { HEBREW_LAYOUT } from './hebrew';
 
 export * from './qwerty';
+export * from './dvorak';
+export * from './colemak';
+export * from './hebrew';
 
-export const SUPPORTED_LAYOUTS: Record<string, KeyboardLayout> = {
-  qwerty: QWERTY_LAYOUT,
-};
+  export const SUPPORTED_LAYOUTS: Record<KeyboardLayoutType, KeyboardLayout> = {
+    qwerty: QWERTY_LAYOUT,
+    dvorak: DVORAK_LAYOUT,
+    colemak: COLEMAK_LAYOUT,
+    hebrew: HEBREW_LAYOUT,
+    workman: QWERTY_LAYOUT, // Fallback to QWERTY if selected
+  };
 
 /**
  * Searches a layout for the KeyDefinition corresponding to a given character or key name.
