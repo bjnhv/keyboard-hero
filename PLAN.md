@@ -254,6 +254,26 @@ graph TD
   - Transparent hands guide and finger pills dynamically highlight the correct physical finger based on the active layout.
   - Per-layout progress persistence: Dexie `userSettings.keyboardLayout`, tracking independent curriculum stages and key confidence per layout.
 
+### Phase 12: Monetization, Commercialization & SEO Traffic Engine
+*Full commercialization strategy and beginner-friendly baby steps blueprint available in [`MONETIZATION_PLAN.md`](./MONETIZATION_PLAN.md).*
+
+- [ ] **Baby Step 1: Legal Compliance & In-Code Foundation (100% Free & Safe)**:
+  - [ ] Standard Privacy Policy (`/privacy`) and Terms of Service (`/terms`) legally required for any website with advertising or analytics.
+  - [ ] Content-Rich Educational Guide (`/guides/how-to-touch-type`) providing substantive indexable text to prevent AdSense "Thin Content" rejection.
+  - [ ] Resilient Zero-CLS `<AdBanner />` placeholder component reserving fixed layout heights, supporting future Google AdSense script integration, and displaying polite Ad-Blocker supporter notes.
+- [ ] **Baby Step 2: Real-World Setup (When Ready)**:
+  - [ ] Connect custom domain (e.g., `keyboardhero.app` / `keyboardhero.io`) to Vercel production.
+  - [ ] Apply to Google AdSense using the content-rich guide URL for smooth first-time approval.
+- [ ] **Baby Step 3: Going Live & Monetizing**:
+  - [ ] Configure `NEXT_PUBLIC_ADSENSE_CLIENT_ID` in environment variables.
+  - [ ] Add `public/ads.txt` inventory authorization file.
+  - [ ] Place safe peripheral `<AdBanner />` slots in Practice Lab footer, session summary scorecard, and `/arcade` hero.
+  - [ ] Implement 3.0s fail-safe timeout for web rewarded video ads (game never freezes if ad fails).
+- [ ] **Baby Step 4: Hardware Affiliates & Stripe Hero Pro**:
+  - [ ] FTC-compliant mechanical keyboard affiliate cards in Sound Theme switcher.
+  - [ ] Stripe Checkout for "Hero Pro" Supporter Pass (\$2.99/mo or \$19.99 lifetime) to disable ads and unlock exclusive switch sounds.
+  - [ ] Future "Hero Edu" classroom license for teachers ($49/year).
+
 ---
 
 ## Online Deployment & Serving Strategy (Discussion)
